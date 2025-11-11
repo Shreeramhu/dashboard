@@ -1,54 +1,47 @@
-import os
-import ssl
-import asyncio
-import threading
-import random
-import traceback
-from flask import Flask, Response
-from websockets.server import serve
+import os, ssl, asyncio, random, threading, traceback
+from flask import Flask, Response, request
 import paho.mqtt.client as mqtt
+import websockets
 
-# ============================
+# =========================
 # CONFIGURATION
-# ============================
+# =========================
 IOT_ENDPOINT = "a1gvk11scaxlba-ats.iot.eu-north-1.amazonaws.com"
 TOPIC = "text/sensor/data"
-
 CA_PATH = os.getenv("CA_PATH", "./AmazonRootCA1.pem")
 CERT_PATH = os.getenv("CERT_PATH", "./device-certificate.pem.crt")
 KEY_PATH = os.getenv("KEY_PATH", "./private.pem.key")
-MODE = os.getenv("MODE", "test").lower()
 PORT = int(os.getenv("PORT", 10000))
+MODE = os.getenv("MODE", "test").lower()
 
+app = Flask(__name__)
 connected_ws = set()
 
-# ============================
-# FLASK APP (Health + WebSocket)
-# ============================
-app = Flask(__name__)
-
+# =========================
+# HEALTH CHECK ENDPOINT
+# =========================
 @app.route("/")
 def home():
-    return "✅ Flask + WebSocket Server is running.", 200
+    return "✅ Flask + WebSocket server running", 200
 
-# ============================
+# =========================
 # LOGGING
-# ============================
+# =========================
 def log(*args):
     print("[SERVER]", *args, flush=True)
 
-# ============================
-# MQTT (AWS IoT)
-# ============================
+# =========================
+# MQTT → AWS IoT
+# =========================
 def random_client_id():
     return f"Client-{random.randint(1000,9999)}"
 
 def on_connect(client, userdata, flags, rc):
     if rc == 0:
-        log("✅ Connected to AWS IoT")
+        log("✅ MQTT connected to AWS IoT")
         client.subscribe(TOPIC)
     else:
-        log("❌ MQTT connect failed:", rc)
+        log("❌ MQTT connect failed, rc=", rc)
 
 def on_message(client, userdata, msg):
     payload = msg.payload.decode("utf-8", errors="ignore")
@@ -65,12 +58,12 @@ def start_mqtt(loop):
         client.connect(IOT_ENDPOINT, 8883)
         client.loop_forever()
     except Exception as e:
-        log("MQTT Error:", e)
+        log("MQTT ERROR:", e)
         traceback.print_exc()
 
-# ============================
-# WEBSOCKET HANDLER
-# ============================
+# =========================
+# WEBSOCKET IMPLEMENTATION
+# =========================
 async def broadcast(message):
     for ws in list(connected_ws):
         try:
@@ -80,12 +73,12 @@ async def broadcast(message):
 
 async def ws_handler(websocket):
     connected_ws.add(websocket)
-    log(f"🌐 WebSocket client connected ({len(connected_ws)})")
+    log(f"🌐 WebSocket connected ({len(connected_ws)} clients)")
     try:
         if MODE == "test":
             while True:
                 fake = {
-                    "Moisture": random.randint(20, 90),
+                    "Moisture": random.randint(30, 90),
                     "Viscosity": random.randint(150, 350),
                     "AirBubble": random.randint(0, 10)
                 }
@@ -98,34 +91,25 @@ async def ws_handler(websocket):
         pass
     finally:
         connected_ws.discard(websocket)
-        log("❌ WebSocket client disconnected")
+        log("❌ WebSocket disconnected")
 
-# ============================
-# COMBINED SERVER
-# ============================
-async def run_websocket_in_flask():
-    """Attach WebSocket handler to Flask port (Render only exposes one)."""
-    async with serve(ws_handler, "0.0.0.0", PORT):
-        log(f"✅ WebSocket running on ws://0.0.0.0:{PORT}")
-        await asyncio.Future()  # keep running forever
+# =========================
+# RUN EVERYTHING
+# =========================
+async def run_ws(loop):
+    """Run WebSocket server on a background task inside Flask."""
+    async with websockets.serve(ws_handler, "0.0.0.0", PORT + 1):
+        log(f"✅ WebSocket active internally on ws://0.0.0.0:{PORT+1}")
+        await asyncio.Future()
 
-def start_server():
+def start_async():
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
-
     if MODE == "iot":
-        mqtt_thread = threading.Thread(target=start_mqtt, args=(loop,), daemon=True)
-        mqtt_thread.start()
-        log("🚀 MQTT Thread started")
+        threading.Thread(target=start_mqtt, args=(loop,), daemon=True).start()
+    loop.run_until_complete(run_ws(loop))
 
-    loop.run_until_complete(run_websocket_in_flask())
-
-# ============================
-# MAIN
-# ============================
 if __name__ == "__main__":
-    log(f"🚀 Starting unified Flask+WebSocket server (PORT={PORT}, MODE={MODE.upper()})")
-    # Run Flask in a background thread (for HTTP health checks)
-    threading.Thread(target=lambda: app.run(host="0.0.0.0", port=PORT, use_reloader=False), daemon=True).start()
-    # Run WebSocket (same port)
-    asyncio.run(run_websocket_in_flask())
+    log(f"🚀 Starting Flask (PORT={PORT}) + WebSocket (PORT={PORT+1}) mode={MODE.upper()}")
+    threading.Thread(target=start_async, daemon=True).start()
+    app.run(host="0.0.0.0", port=PORT, use_reloader=False)
