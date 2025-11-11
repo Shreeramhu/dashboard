@@ -1,115 +1,69 @@
-import os, ssl, asyncio, random, threading, traceback
-from flask import Flask, Response, request
-import paho.mqtt.client as mqtt
-import websockets
+# subscribe.py
+import os, random, json, asyncio
+from fastapi import FastAPI, WebSocket
+from fastapi.responses import JSONResponse
+import uvicorn
 
-# =========================
+# =======================
 # CONFIGURATION
-# =========================
-IOT_ENDPOINT = "a1gvk11scaxlba-ats.iot.eu-north-1.amazonaws.com"
-TOPIC = "text/sensor/data"
-CA_PATH = os.getenv("CA_PATH", "./AmazonRootCA1.pem")
-CERT_PATH = os.getenv("CERT_PATH", "./device-certificate.pem.crt")
-KEY_PATH = os.getenv("KEY_PATH", "./private.pem.key")
+# =======================
+MODE = os.getenv("MODE", "test").lower()  # "test" or "iot"
 PORT = int(os.getenv("PORT", 10000))
-MODE = os.getenv("MODE", "test").lower()
 
-app = Flask(__name__)
-connected_ws = set()
+app = FastAPI(title="Viscosity WebSocket Server")
 
-# =========================
-# HEALTH CHECK ENDPOINT
-# =========================
-@app.route("/")
-def home():
-    return "✅ Flask + WebSocket server running", 200
+# Keep track of connected clients
+connected_clients = set()
 
-# =========================
-# LOGGING
-# =========================
-def log(*args):
-    print("[SERVER]", *args, flush=True)
+# =======================
+# HTTP ROUTE (Health Check)
+# =======================
+@app.get("/")
+async def home():
+    return JSONResponse(
+        {
+            "status": "✅ FastAPI WebSocket server running",
+            "mode": MODE,
+            "clients_connected": len(connected_clients),
+        }
+    )
 
-# =========================
-# MQTT → AWS IoT
-# =========================
-def random_client_id():
-    return f"Client-{random.randint(1000,9999)}"
+# =======================
+# WEBSOCKET ROUTE
+# =======================
+@app.websocket("/ws")
+async def websocket_endpoint(websocket: WebSocket):
+    await websocket.accept()
+    connected_clients.add(websocket)
+    print(f"🌐 Client connected ({len(connected_clients)})")
 
-def on_connect(client, userdata, flags, rc):
-    if rc == 0:
-        log("✅ MQTT connected to AWS IoT")
-        client.subscribe(TOPIC)
-    else:
-        log("❌ MQTT connect failed, rc=", rc)
-
-def on_message(client, userdata, msg):
-    payload = msg.payload.decode("utf-8", errors="ignore")
-    loop = userdata["loop"]
-    asyncio.run_coroutine_threadsafe(broadcast(payload), loop)
-
-def start_mqtt(loop):
-    try:
-        client = mqtt.Client(client_id=random_client_id(), userdata={"loop": loop})
-        client.on_connect = on_connect
-        client.on_message = on_message
-        client.tls_set(CA_PATH, certfile=CERT_PATH, keyfile=KEY_PATH, tls_version=ssl.PROTOCOL_TLSv1_2)
-        log("🔐 Connecting to AWS IoT...")
-        client.connect(IOT_ENDPOINT, 8883)
-        client.loop_forever()
-    except Exception as e:
-        log("MQTT ERROR:", e)
-        traceback.print_exc()
-
-# =========================
-# WEBSOCKET IMPLEMENTATION
-# =========================
-async def broadcast(message):
-    for ws in list(connected_ws):
-        try:
-            await ws.send(message)
-        except:
-            connected_ws.discard(ws)
-
-async def ws_handler(websocket):
-    connected_ws.add(websocket)
-    log(f"🌐 WebSocket connected ({len(connected_ws)} clients)")
     try:
         if MODE == "test":
+            # Send random simulated data every 2 seconds
             while True:
-                fake = {
+                fake_data = {
                     "Moisture": random.randint(30, 90),
                     "Viscosity": random.randint(150, 350),
-                    "AirBubble": random.randint(0, 10)
+                    "AirBubble": random.randint(0, 10),
                 }
-                await websocket.send(str(fake))
+                await websocket.send_text(json.dumps(fake_data))
                 await asyncio.sleep(2)
         else:
-            async for _ in websocket:
-                pass
-    except:
-        pass
+            # Placeholder for AWS IoT integration
+            # You can replace this section with MQTT logic
+            while True:
+                await asyncio.sleep(1)
+
+    except Exception as e:
+        print(f"❌ Client disconnected: {e}")
+
     finally:
-        connected_ws.discard(websocket)
-        log("❌ WebSocket disconnected")
+        connected_clients.discard(websocket)
+        print(f"🧹 Client removed. Active clients: {len(connected_clients)}")
 
-# =========================
-# RUN EVERYTHING
-# =========================
-async def run_ws(loop):
-    """Run WebSocket server on a background task inside Flask."""
-    async with websockets.serve(ws_handler, "0.0.0.0", PORT + 1):
-        log(f"✅ WebSocket active internally on ws://0.0.0.0:{PORT+1}")
-        await asyncio.Future()
-
-def start_async():
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    if MODE == "iot":
-        threading.Thread(target=start_mqtt, args=(loop,), daemon=True).start()
-    loop.run_until_complete(run_ws(loop))
-
+# =======================
+# MAIN ENTRY POINT
+# =======================
 if __name__ == "__main__":
-    log(f"🚀 Starting Flask (PORT={PORT}) + WebSocket (PORT={PORT+1}) mode={MODE.upper()}")
-    threading.Thread(target=start_async, daemon=True).start()
-    app.run(host="0.0.0.0", port=PORT, use_reloader=False)
+    print(f"[SERVER] 🚀 Starting FastAPI WebSocket server on port {PORT} (MODE={MODE.upper()})")
+    uvicorn.run(app, host="0.0.0.0", port=PORT)
