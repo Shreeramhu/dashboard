@@ -1,7 +1,4 @@
-websockets
-asyncio
-flask
-gunicorn
-python-dotenv
+fastapi
+uvicorn
 paho-mqtt
-
+python-dotenv
