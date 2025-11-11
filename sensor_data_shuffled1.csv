@@ -1,0 +1,201 @@
+Moisture,MoistureValue,Air Bubble,AirBubbleValue,Viscosity,ViscosityValue,Valve,Communication,PowerSurge,Description,Alert,SystemResult
+1,824,1,0,1,2.94,ON,Success,Normal,All Systems Operating Normally,Normal,Pass
+1,703,1,1,1,2.56,ON,Success,Normal,All Systems Operating Normally,Normal,Pass
+0,0,1,1,1,2.43,ON,Success,Normal,Partial Sensor Failure,Check Sensor Connections,Fail
+1,745,0,0,1,3.04,ON,Success,Normal,Partial Sensor Failure,Check Sensor Connections,Fail
+1,813,1,0,1,3.29,OFF,Success,Normal,Actuator Jam,Flow Path Blocked,Fail
+1,712,1,1,1,3.09,OFF,Success,Normal,Actuator Jam,Flow Path Blocked,Fail
+1,851,1,0,1,2.67,ON,Fail,Normal,Communication Failure,Cloud Disconnected,Fail
+1,782,1,1,1,2.35,ON,Fail,Normal,Communication Failure,Cloud Disconnected,Fail
+1,793,1,1,1,2.74,ON,Success,Abnormal,Power Fluctuation,System Restarting,Fail
+1,710,1,0,1,2.88,ON,Success,Abnormal,Power Fluctuation,System Restarting,Fail
+1,848,1,0,1,3.11,ON,Success,Normal,All Systems Operating Normally,Normal,Pass
+1,795,1,1,1,2.70,ON,Success,Normal,All Systems Operating Normally,Normal,Pass
+0,0,1,1,1,2.80,ON,Success,Normal,Partial Sensor Failure,Check Sensor Connections,Fail
+1,768,0,1,1,2.63,ON,Success,Normal,Partial Sensor Failure,Check Sensor Connections,Fail
+1,813,1,0,1,3.33,OFF,Success,Normal,Actuator Jam,Flow Path Blocked,Fail
+1,757,1,1,1,3.25,OFF,Success,Normal,Actuator Jam,Flow Path Blocked,Fail
+1,719,1,1,1,3.27,ON,Fail,Normal,Communication Failure,Cloud Disconnected,Fail
+1,752,1,0,1,2.91,ON,Fail,Normal,Communication Failure,Cloud Disconnected,Fail
+1,836,1,0,1,3.05,ON,Success,Abnormal,Power Fluctuation,System Restarting,Fail
+1,767,1,1,1,2.68,ON,Success,Abnormal,Power Fluctuation,System Restarting,Fail
+1,714,1,0,1,2.52,ON,Success,Normal,All Systems Operating Normally,Normal,Pass
+1,772,1,1,1,2.86,ON,Success,Normal,All Systems Operating Normally,Normal,Pass
+1,0,1,0,1,2.71,ON,Success,Normal,Partial Sensor Failure,Check Sensor Connections,Fail
+1,689,1,1,0,2.99,ON,Success,Normal,Partial Sensor Failure,Check Sensor Connections,Fail
+1,741,1,0,1,3.18,OFF,Success,Normal,Actuator Jam,Flow Path Blocked,Fail
+1,805,1,1,1,3.07,OFF,Success,Normal,Actuator Jam,Flow Path Blocked,Fail
+1,736,1,0,1,2.75,ON,Fail,Normal,Communication Failure,Cloud Disconnected,Fail
+1,800,1,1,1,2.62,ON,Fail,Normal,Communication Failure,Cloud Disconnected,Fail
+1,720,1,1,1,2.93,ON,Success,Abnormal,Power Fluctuation,System Restarting,Fail
+1,751,1,0,1,3.02,ON,Success,Abnormal,Power Fluctuation,System Restarting,Fail
+1,689,1,0,1,2.76,ON,Success,Normal,All Systems Operating Normally,Normal,Pass
+1,720,1,1,1,2.64,ON,Success,Normal,All Systems Operating Normally,Normal,Pass
+0,0,1,0,1,3.09,ON,Success,Normal,Partial Sensor Failure,Check Sensor Connections,Fail
+1,688,0,1,1,2.95,ON,Success,Normal,Partial Sensor Failure,Check Sensor Connections,Fail
+1,725,1,0,1,3.12,OFF,Success,Normal,Actuator Jam,Flow Path Blocked,Fail
+1,793,1,1,1,2.70,OFF,Success,Normal,Actuator Jam,Flow Path Blocked,Fail
+1,760,1,0,1,3.20,ON,Fail,Normal,Communication Failure,Cloud Disconnected,Fail
+1,818,1,1,1,3.08,ON,Fail,Normal,Communication Failure,Cloud Disconnected,Fail
+1,807,1,0,1,3.06,ON,Success,Abnormal,Power Fluctuation,System Restarting,Fail
+1,752,1,1,1,2.73,ON,Success,Abnormal,Power Fluctuation,System Restarting,Fail
+1,799,1,0,1,2.57,ON,Success,Normal,All Systems Operating Normally,Normal,Pass
+1,746,1,1,1,2.81,ON,Success,Normal,All Systems Operating Normally,Normal,Pass
+1,0,1,1,1,2.85,ON,Success,Normal,Partial Sensor Failure,Check Sensor Connections,Fail
+1,781,0,0,1,2.76,ON,Success,Normal,Partial Sensor Failure,Check Sensor Connections,Fail
+1,796,1,0,1,3.19,OFF,Success,Normal,Actuator Jam,Flow Path Blocked,Fail
+1,823,1,1,1,3.23,OFF,Success,Normal,Actuator Jam,Flow Path Blocked,Fail
+1,812,1,1,1,3.11,ON,Fail,Normal,Communication Failure,Cloud Disconnected,Fail
+1,773,1,0,1,2.97,ON,Fail,Normal,Communication Failure,Cloud Disconnected,Fail
+1,721,1,0,1,2.59,ON,Success,Abnormal,Power Fluctuation,System Restarting,Fail
+1,836,1,1,1,2.93,ON,Success,Abnormal,Power Fluctuation,System Restarting,Fail
+1,780,1,0,1,2.72,ON,Success,Normal,All Systems Operating Normally,Normal,Pass
+1,735,1,1,1,2.88,ON,Success,Normal,All Systems Operating Normally,Normal,Pass
+0,0,1,0,1,3.03,ON,Success,Normal,Partial Sensor Failure,Check Sensor Connections,Fail
+1,819,0,1,1,2.79,ON,Success,Normal,Partial Sensor Failure,Check Sensor Connections,Fail
+1,745,1,1,1,3.21,OFF,Success,Normal,Actuator Jam,Flow Path Blocked,Fail
+1,812,1,0,1,3.15,OFF,Success,Normal,Actuator Jam,Flow Path Blocked,Fail
+1,784,1,1,1,2.96,ON,Fail,Normal,Communication Failure,Cloud Disconnected,Fail
+1,739,1,0,1,2.85,ON,Fail,Normal,Communication Failure,Cloud Disconnected,Fail
+1,805,1,0,1,3.05,ON,Success,Abnormal,Power Fluctuation,System Restarting,Fail
+1,777,1,1,1,2.77,ON,Success,Abnormal,Power Fluctuation,System Restarting,Fail
+1,808,1,0,1,2.71,ON,Success,Normal,All Systems Operating Normally,Normal,Pass
+1,776,1,1,1,2.64,ON,Success,Normal,All Systems Operating Normally,Normal,Pass
+1,842,1,1,1,3.02,ON,Success,Normal,All Systems Operating Normally,Normal,Pass
+1,764,1,0,1,2.74,ON,Success,Normal,All Systems Operating Normally,Normal,Pass
+0,0,1,0,1,3.08,ON,Success,Normal,Partial Sensor Failure,Check Sensor Connections,Fail
+1,826,0,1,1,2.91,ON,Success,Normal,Partial Sensor Failure,Check Sensor Connections,Fail
+1,784,1,1,1,3.25,OFF,Success,Normal,Actuator Jam,Flow Path Blocked,Fail
+1,739,1,0,1,3.09,OFF,Success,Normal,Actuator Jam,Flow Path Blocked,Fail
+1,795,1,0,1,2.82,ON,Fail,Normal,Communication Failure,Cloud Disconnected,Fail
+1,742,1,1,1,2.90,ON,Fail,Normal,Communication Failure,Cloud Disconnected,Fail
+1,753,1,0,1,2.77,ON,Success,Abnormal,Power Fluctuation,System Restarting,Fail
+1,770,1,1,1,2.99,ON,Success,Abnormal,Power Fluctuation,System Restarting,Fail
+1,816,1,1,1,2.81,ON,Success,Normal,All Systems Operating Normally,Normal,Pass
+1,724,1,0,1,3.07,ON,Success,Normal,All Systems Operating Normally,Normal,Pass
+0,0,1,1,1,2.92,ON,Success,Normal,Partial Sensor Failure,Check Sensor Connections,Fail
+1,700,0,0,1,2.84,ON,Success,Normal,Partial Sensor Failure,Check Sensor Connections,Fail
+1,787,1,1,1,3.16,OFF,Success,Normal,Actuator Jam,Flow Path Blocked,Fail
+1,749,1,0,1,3.28,OFF,Success,Normal,Actuator Jam,Flow Path Blocked,Fail
+1,802,1,0,1,2.79,ON,Fail,Normal,Communication Failure,Cloud Disconnected,Fail
+1,825,1,1,1,2.68,ON,Fail,Normal,Communication Failure,Cloud Disconnected,Fail
+1,789,1,1,1,3.10,ON,Success,Abnormal,Power Fluctuation,System Restarting,Fail
+1,773,1,0,1,2.95,ON,Success,Abnormal,Power Fluctuation,System Restarting,Fail
+1,740,1,1,1,2.63,ON,Success,Normal,All Systems Operating Normally,Normal,Pass
+1,825,1,0,1,2.89,ON,Success,Normal,All Systems Operating Normally,Normal,Pass
+0,0,1,0,1,2.75,ON,Success,Normal,Partial Sensor Failure,Check Sensor Connections,Fail
+1,798,0,1,1,2.81,ON,Success,Normal,Partial Sensor Failure,Check Sensor Connections,Fail
+1,746,1,0,1,3.20,OFF,Success,Normal,Actuator Jam,Flow Path Blocked,Fail
+1,733,1,1,1,3.09,OFF,Success,Normal,Actuator Jam,Flow Path Blocked,Fail
+1,786,1,1,1,2.94,ON,Fail,Normal,Communication Failure,Cloud Disconnected,Fail
+1,752,1,0,1,2.76,ON,Fail,Normal,Communication Failure,Cloud Disconnected,Fail
+1,813,1,0,1,3.13,ON,Success,Abnormal,Power Fluctuation,System Restarting,Fail
+1,766,1,1,1,2.91,ON,Success,Abnormal,Power Fluctuation,System Restarting,Fail
+1,769,1,1,1,2.73,ON,Success,Normal,All Systems Operating Normally,Normal,Pass
+1,742,1,0,1,3.04,ON,Success,Normal,All Systems Operating Normally,Normal,Pass
+0,0,1,0,1,2.80,ON,Success,Normal,Partial Sensor Failure,Check Sensor Connections,Fail
+1,804,0,1,1,2.77,ON,Success,Normal,Partial Sensor Failure,Check Sensor Connections,Fail
+1,737,1,1,1,3.26,OFF,Success,Normal,Actuator Jam,Flow Path Blocked,Fail
+1,759,1,0,1,3.19,OFF,Success,Normal,Actuator Jam,Flow Path Blocked,Fail
+1,803,1,0,1,2.85,ON,Fail,Normal,Communication Failure,Cloud Disconnected,Fail
+1,744,1,1,1,2.96,ON,Fail,Normal,Communication Failure,Cloud Disconnected,Fail
+1,824,1,0,1,2.94,ON,Success,Normal,All Systems Operating Normally,Normal,Pass
+1,703,1,1,1,2.56,ON,Success,Normal,All Systems Operating Normally,Normal,Pass
+0,0,1,1,1,2.43,ON,Success,Normal,Partial Sensor Failure,Check Sensor Connections,Fail
+1,745,0,0,1,3.04,ON,Success,Normal,Partial Sensor Failure,Check Sensor Connections,Fail
+1,813,1,0,1,3.29,OFF,Success,Normal,Actuator Jam,Flow Path Blocked,Fail
+1,712,1,1,1,3.09,OFF,Success,Normal,Actuator Jam,Flow Path Blocked,Fail
+1,851,1,0,1,2.67,ON,Fail,Normal,Communication Failure,Cloud Disconnected,Fail
+1,782,1,1,1,2.35,ON,Fail,Normal,Communication Failure,Cloud Disconnected,Fail
+1,793,1,1,1,2.74,ON,Success,Abnormal,Power Fluctuation,System Restarting,Fail
+1,710,1,0,1,2.88,ON,Success,Abnormal,Power Fluctuation,System Restarting,Fail
+1,848,1,0,1,3.11,ON,Success,Normal,All Systems Operating Normally,Normal,Pass
+1,795,1,1,1,2.70,ON,Success,Normal,All Systems Operating Normally,Normal,Pass
+0,0,1,1,1,2.80,ON,Success,Normal,Partial Sensor Failure,Check Sensor Connections,Fail
+1,768,0,1,1,2.63,ON,Success,Normal,Partial Sensor Failure,Check Sensor Connections,Fail
+1,813,1,0,1,3.33,OFF,Success,Normal,Actuator Jam,Flow Path Blocked,Fail
+1,757,1,1,1,3.25,OFF,Success,Normal,Actuator Jam,Flow Path Blocked,Fail
+1,719,1,1,1,3.27,ON,Fail,Normal,Communication Failure,Cloud Disconnected,Fail
+1,752,1,0,1,2.91,ON,Fail,Normal,Communication Failure,Cloud Disconnected,Fail
+1,836,1,0,1,3.05,ON,Success,Abnormal,Power Fluctuation,System Restarting,Fail
+1,767,1,1,1,2.68,ON,Success,Abnormal,Power Fluctuation,System Restarting,Fail
+1,714,1,0,1,2.52,ON,Success,Normal,All Systems Operating Normally,Normal,Pass
+1,772,1,1,1,2.86,ON,Success,Normal,All Systems Operating Normally,Normal,Pass
+1,0,1,0,1,2.71,ON,Success,Normal,Partial Sensor Failure,Check Sensor Connections,Fail
+1,689,1,1,0,2.99,ON,Success,Normal,Partial Sensor Failure,Check Sensor Connections,Fail
+1,741,1,0,1,3.18,OFF,Success,Normal,Actuator Jam,Flow Path Blocked,Fail
+1,805,1,1,1,3.07,OFF,Success,Normal,Actuator Jam,Flow Path Blocked,Fail
+1,736,1,0,1,2.75,ON,Fail,Normal,Communication Failure,Cloud Disconnected,Fail
+1,800,1,1,1,2.62,ON,Fail,Normal,Communication Failure,Cloud Disconnected,Fail
+1,720,1,1,1,2.93,ON,Success,Abnormal,Power Fluctuation,System Restarting,Fail
+1,751,1,0,1,3.02,ON,Success,Abnormal,Power Fluctuation,System Restarting,Fail
+1,689,1,0,1,2.76,ON,Success,Normal,All Systems Operating Normally,Normal,Pass
+1,720,1,1,1,2.64,ON,Success,Normal,All Systems Operating Normally,Normal,Pass
+0,0,1,0,1,3.09,ON,Success,Normal,Partial Sensor Failure,Check Sensor Connections,Fail
+1,688,0,1,1,2.95,ON,Success,Normal,Partial Sensor Failure,Check Sensor Connections,Fail
+1,725,1,0,1,3.12,OFF,Success,Normal,Actuator Jam,Flow Path Blocked,Fail
+1,793,1,1,1,2.70,OFF,Success,Normal,Actuator Jam,Flow Path Blocked,Fail
+1,760,1,0,1,3.20,ON,Fail,Normal,Communication Failure,Cloud Disconnected,Fail
+1,818,1,1,1,3.08,ON,Fail,Normal,Communication Failure,Cloud Disconnected,Fail
+1,807,1,0,1,3.06,ON,Success,Abnormal,Power Fluctuation,System Restarting,Fail
+1,752,1,1,1,2.73,ON,Success,Abnormal,Power Fluctuation,System Restarting,Fail
+1,799,1,0,1,2.57,ON,Success,Normal,All Systems Operating Normally,Normal,Pass
+1,746,1,1,1,2.81,ON,Success,Normal,All Systems Operating Normally,Normal,Pass
+1,0,1,1,1,2.85,ON,Success,Normal,Partial Sensor Failure,Check Sensor Connections,Fail
+1,781,0,0,1,2.76,ON,Success,Normal,Partial Sensor Failure,Check Sensor Connections,Fail
+1,796,1,0,1,3.19,OFF,Success,Normal,Actuator Jam,Flow Path Blocked,Fail
+1,823,1,1,1,3.23,OFF,Success,Normal,Actuator Jam,Flow Path Blocked,Fail
+1,812,1,1,1,3.11,ON,Fail,Normal,Communication Failure,Cloud Disconnected,Fail
+1,773,1,0,1,2.97,ON,Fail,Normal,Communication Failure,Cloud Disconnected,Fail
+1,721,1,0,1,2.59,ON,Success,Abnormal,Power Fluctuation,System Restarting,Fail
+1,836,1,1,1,2.93,ON,Success,Abnormal,Power Fluctuation,System Restarting,Fail
+1,780,1,0,1,2.72,ON,Success,Normal,All Systems Operating Normally,Normal,Pass
+1,735,1,1,1,2.88,ON,Success,Normal,All Systems Operating Normally,Normal,Pass
+0,0,1,0,1,3.03,ON,Success,Normal,Partial Sensor Failure,Check Sensor Connections,Fail
+1,819,0,1,1,2.79,ON,Success,Normal,Partial Sensor Failure,Check Sensor Connections,Fail
+1,745,1,1,1,3.21,OFF,Success,Normal,Actuator Jam,Flow Path Blocked,Fail
+1,812,1,0,1,3.15,OFF,Success,Normal,Actuator Jam,Flow Path Blocked,Fail
+1,784,1,1,1,2.96,ON,Fail,Normal,Communication Failure,Cloud Disconnected,Fail
+1,739,1,0,1,2.85,ON,Fail,Normal,Communication Failure,Cloud Disconnected,Fail
+1,805,1,0,1,3.05,ON,Success,Abnormal,Power Fluctuation,System Restarting,Fail
+1,777,1,1,1,2.77,ON,Success,Abnormal,Power Fluctuation,System Restarting,Fail
+1,808,1,0,1,2.71,ON,Success,Normal,All Systems Operating Normally,Normal,Pass
+1,776,1,1,1,2.64,ON,Success,Normal,All Systems Operating Normally,Normal,Pass
+1,842,1,1,1,3.02,ON,Success,Normal,All Systems Operating Normally,Normal,Pass
+1,764,1,0,1,2.74,ON,Success,Normal,All Systems Operating Normally,Normal,Pass
+0,0,1,0,1,3.08,ON,Success,Normal,Partial Sensor Failure,Check Sensor Connections,Fail
+1,826,0,1,1,2.91,ON,Success,Normal,Partial Sensor Failure,Check Sensor Connections,Fail
+1,784,1,1,1,3.25,OFF,Success,Normal,Actuator Jam,Flow Path Blocked,Fail
+1,739,1,0,1,3.09,OFF,Success,Normal,Actuator Jam,Flow Path Blocked,Fail
+1,795,1,0,1,2.82,ON,Fail,Normal,Communication Failure,Cloud Disconnected,Fail
+1,742,1,1,1,2.90,ON,Fail,Normal,Communication Failure,Cloud Disconnected,Fail
+1,753,1,0,1,2.77,ON,Success,Abnormal,Power Fluctuation,System Restarting,Fail
+1,770,1,1,1,2.99,ON,Success,Abnormal,Power Fluctuation,System Restarting,Fail
+1,816,1,1,1,2.81,ON,Success,Normal,All Systems Operating Normally,Normal,Pass
+1,724,1,0,1,3.07,ON,Success,Normal,All Systems Operating Normally,Normal,Pass
+0,0,1,1,1,2.92,ON,Success,Normal,Partial Sensor Failure,Check Sensor Connections,Fail
+1,700,0,0,1,2.84,ON,Success,Normal,Partial Sensor Failure,Check Sensor Connections,Fail
+1,787,1,1,1,3.16,OFF,Success,Normal,Actuator Jam,Flow Path Blocked,Fail
+1,749,1,0,1,3.28,OFF,Success,Normal,Actuator Jam,Flow Path Blocked,Fail
+1,802,1,0,1,2.79,ON,Fail,Normal,Communication Failure,Cloud Disconnected,Fail
+1,825,1,1,1,2.68,ON,Fail,Normal,Communication Failure,Cloud Disconnected,Fail
+1,789,1,1,1,3.10,ON,Success,Abnormal,Power Fluctuation,System Restarting,Fail
+1,773,1,0,1,2.95,ON,Success,Abnormal,Power Fluctuation,System Restarting,Fail
+1,740,1,1,1,2.63,ON,Success,Normal,All Systems Operating Normally,Normal,Pass
+1,825,1,0,1,2.89,ON,Success,Normal,All Systems Operating Normally,Normal,Pass
+0,0,1,0,1,2.75,ON,Success,Normal,Partial Sensor Failure,Check Sensor Connections,Fail
+1,798,0,1,1,2.81,ON,Success,Normal,Partial Sensor Failure,Check Sensor Connections,Fail
+1,746,1,0,1,3.20,OFF,Success,Normal,Actuator Jam,Flow Path Blocked,Fail
+1,733,1,1,1,3.09,OFF,Success,Normal,Actuator Jam,Flow Path Blocked,Fail
+1,786,1,1,1,2.94,ON,Fail,Normal,Communication Failure,Cloud Disconnected,Fail
+1,752,1,0,1,2.76,ON,Fail,Normal,Communication Failure,Cloud Disconnected,Fail
+1,813,1,0,1,3.13,ON,Success,Abnormal,Power Fluctuation,System Restarting,Fail
+1,766,1,1,1,2.91,ON,Success,Abnormal,Power Fluctuation,System Restarting,Fail
+1,769,1,1,1,2.73,ON,Success,Normal,All Systems Operating Normally,Normal,Pass
+1,742,1,0,1,3.04,ON,Success,Normal,All Systems Operating Normally,Normal,Pass
+0,0,1,0,1,2.80,ON,Success,Normal,Partial Sensor Failure,Check Sensor Connections,Fail
+1,804,0,1,1,2.77,ON,Success,Normal,Partial Sensor Failure,Check Sensor Connections,Fail
+1,737,1,1,1,3.26,OFF,Success,Normal,Actuator Jam,Flow Path Blocked,Fail
+1,759,1,0,1,3.19,OFF,Success,Normal,Actuator Jam,Flow Path Blocked,Fail
+1,803,1,0,1,2.85,ON,Fail,Normal,Communication Failure,Cloud Disconnected,Fail
+1,744,1,1,1,2.96,ON,Fail,Normal,Communication Failure,Cloud Disconnected,Fail

@@ -1,0 +1,1984 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>ViscoTexx — Live Dashboard</title>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- PDF libs -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<style>
+:root{
+  --bg1:#0b1220; --bg2:#0e2335; --card:#0b2736; --muted:#9bbad0;
+  --accent:#8b5cf6; --text:#e7f6ff; --ok:#22c55e; --warn:#f59e0b; --crit:#ef4444;
+  --glass:rgba(255,255,255,0.02);
+}
+*{box-sizing:border-box;margin:0;padding:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;}
+body{background:linear-gradient(180deg,var(--bg1),var(--bg2));color:var(--text);min-height:100vh;padding:22px;}
+.login-bg{
+  background:radial-gradient(ellipse at top,rgba(139,92,246,0.15),transparent 50%),
+             radial-gradient(ellipse at bottom,rgba(6,182,212,0.1),transparent 50%),
+             linear-gradient(180deg,#0a1628,#0b1e2f) !important;
+}
+.container{max-width:1200px;margin:0 auto;}
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;position:relative}
+.title{display:flex;align-items:center;gap:12px}
+.brand{width:40px;height:40px;border-radius:8px;object-fit:contain}
+.brand-login{width:80px;height:80px;margin:0 auto 20px;border-radius:16px;object-fit:contain;box-shadow:0 8px 24px rgba(139,92,246,0.3)}
+.title h1{font-size:1.2rem;color:var(--accent)}
+.small{font-size:.86rem;color:var(--muted)}
+.btn{
+  background:linear-gradient(135deg,#8b5cf6,#7c3aed);
+  color:#fff;
+  padding:12px 24px;
+  border-radius:12px;
+  border:none;
+  font-weight:600;
+  font-size:0.95rem;
+  cursor:pointer;
+  transition:all 0.3s ease;
+  box-shadow:0 4px 12px rgba(139,92,246,0.3);
+}
+.btn:hover{
+  background:linear-gradient(135deg,#7c3aed,#6d28d9);
+  box-shadow:0 6px 20px rgba(139,92,246,0.4);
+  transform:translateY(-1px);
+}
+.btn:active{
+  transform:translateY(0);
+}
+.btn.ghost{
+  background:transparent;
+  border:1.5px solid rgba(139,92,246,0.3);
+  color:var(--text);
+  box-shadow:none;
+}
+.btn.ghost:hover{
+  background:rgba(139,92,246,0.1);
+  border-color:rgba(139,92,246,0.5);
+}
+.btn.sm{padding:8px 16px;border-radius:10px;font-size:0.88rem}
+
+/* Login */
+.login-card{
+  max-width:440px;
+  margin:80px auto;
+  padding:48px 40px;
+  background:rgba(11,39,54,0.85);
+  backdrop-filter:blur(20px);
+  border-radius:20px;
+  border:1px solid rgba(139,92,246,0.2);
+  box-shadow:0 20px 60px rgba(0,0,0,0.4), 0 0 0 1px rgba(139,92,246,0.1) inset;
+  animation:fadeInUp 0.6s ease;
+}
+@keyframes fadeInUp{
+  from{opacity:0;transform:translateY(30px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.login-card h2{
+  font-size:1.8rem;
+  font-weight:700;
+  margin-bottom:8px;
+  background:linear-gradient(135deg,#8b5cf6,#06b6d4);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.input{
+  width:100%;
+  padding:14px 16px;
+  border-radius:12px;
+  border:1.5px solid rgba(139,92,246,0.25);
+  background:rgba(14,35,53,0.6);
+  color:var(--text);
+  margin:12px 0;
+  font-size:0.95rem;
+  transition:all 0.3s ease;
+}
+.input:focus{
+  outline:none;
+  border-color:rgba(139,92,246,0.6);
+  background:rgba(14,35,53,0.8);
+  box-shadow:0 0 0 3px rgba(139,92,246,0.1);
+}
+.input::placeholder{
+  color:rgba(155,186,208,0.5);
+}
+select.input option{background:#0a2233;color:var(--text)}
+textarea.input{
+  resize:vertical;
+  min-height:80px;
+  font-family:inherit;
+}
+
+/* Top controls and tabs */
+.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px}
+.controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.tabbar{display:flex;gap:10px;flex-wrap:wrap}
+.tab{
+  padding:10px 18px;
+  border-radius:12px;
+  background:rgba(11,39,54,0.4);
+  border:1.5px solid rgba(139,92,246,0.2);
+  cursor:pointer;
+  color:var(--muted);
+  font-weight:600;
+  transition:all 0.3s ease;
+}
+.tab:hover{
+  background:rgba(139,92,246,0.1);
+  border-color:rgba(139,92,246,0.4);
+}
+.tab.active{
+  background:linear-gradient(135deg,rgba(139,92,246,0.25),rgba(6,182,212,0.15));
+  color:var(--text);
+  border:1.5px solid rgba(139,92,246,0.6);
+  box-shadow:0 4px 16px rgba(139,92,246,0.25);
+}
+
+/* Bell + modern slide-in notifications */
+.bell-btn{
+  display:none;
+  position:relative;
+  align-items:center;
+  justify-content:center;
+  width:44px;
+  height:44px;
+  border-radius:12px;
+  border:1.5px solid rgba(139,92,246,0.25);
+  background:rgba(11,39,54,0.4);
+  cursor:pointer;
+  transition:all 0.3s ease;
+}
+.bell-btn:hover{
+  background:rgba(139,92,246,0.15);
+  border-color:rgba(139,92,246,0.5);
+  transform:scale(1.05);
+}
+.bell-icon{font-size:18px;line-height:1}
+.bell-count{position:absolute;top:-6px;right:-6px;background:var(--crit);color:#fff;border-radius:999px;padding:2px 6px;font-size:.72rem;font-weight:800;min-width:18px;text-align:center}
+
+/* Slide-in drawer (top-right) */
+.notif-drawer{
+  position:fixed;top:16px;right:16px;width:420px;max-width:92vw;max-height:70vh;overflow:auto;
+  background:rgba(11,39,54,0.95);backdrop-filter:blur(20px);
+  border:1px solid rgba(139,92,246,0.25);border-radius:16px;
+  box-shadow:0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(139,92,246,0.1) inset;
+  transform:translateY(-16px) scale(0.96);opacity:0;pointer-events:none;
+  transition:opacity .25s ease, transform .25s ease;
+  z-index:1200;padding:16px;
+}
+.notif-drawer.open{opacity:1;transform:translateY(0) scale(1);pointer-events:auto}
+.notif-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.notif-item{
+  display:flex;
+  gap:12px;
+  align-items:flex-start;
+  padding:14px;
+  border-radius:12px;
+  border:1px solid rgba(139,92,246,0.15);
+  background:rgba(11,39,54,0.3);
+  margin:10px 0;
+  transition:all 0.3s ease;
+}
+.notif-item:hover{
+  background:rgba(139,92,246,0.1);
+  border-color:rgba(139,92,246,0.3);
+}
+.notif-ico{font-size:18px;line-height:1.2;width:20px;text-align:center;opacity:.9}
+.notif-tag{font-size:.72rem;font-weight:800;padding:2px 6px;border-radius:999px;margin-left:6px}
+.tag-alert{background:var(--warn);color:#2a2100}
+.tag-crit{background:var(--crit);color:#2b0000}
+.tag-ticket{background:#93c5fd;color:#0b2547}
+.notif-actions{margin-left:auto;display:flex;gap:6px}
+
+/* Manager inner tabs */
+.m-subtabs{display:flex;gap:10px;margin:8px 0 16px}
+.m-subtab{
+  padding:10px 20px;
+  border-radius:12px;
+  background:rgba(11,39,54,0.4);
+  border:1.5px solid rgba(139,92,246,0.2);
+  cursor:pointer;
+  color:var(--muted);
+  font-weight:600;
+  transition:all 0.3s ease;
+}
+.m-subtab:hover{
+  background:rgba(139,92,246,0.1);
+  border-color:rgba(139,92,246,0.4);
+}
+.m-subtab.active{
+  background:linear-gradient(135deg,rgba(139,92,246,0.2),rgba(6,182,212,0.1));
+  color:var(--text);
+  border:1.5px solid rgba(139,92,246,0.5);
+  box-shadow:0 4px 12px rgba(139,92,246,0.2);
+}
+
+/* cards */
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px}
+.card{
+  background:rgba(11,39,54,0.4);
+  backdrop-filter:blur(10px);
+  padding:20px;
+  border-radius:16px;
+  border:1px solid rgba(139,92,246,0.15);
+  box-shadow:0 8px 32px rgba(0,0,0,0.2);
+  transition:all 0.3s ease;
+}
+.card:hover{
+  border-color:rgba(139,92,246,0.3);
+  box-shadow:0 12px 40px rgba(139,92,246,0.15);
+  transform:translateY(-2px);
+}
+.card h3{
+  color:var(--text);
+  font-size:1.1rem;
+  font-weight:700;
+  margin-bottom:16px;
+  padding-bottom:12px;
+  border-bottom:1px solid rgba(139,92,246,0.2);
+}
+.kpi{font-size:1.8rem;font-weight:900;background:linear-gradient(135deg,#8b5cf6,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.kpi small{display:block;font-size:.84rem;color:var(--muted);margin-top:8px;font-weight:500}
+
+/* charts */
+.charts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:16px}
+.chart-card{
+  min-height:300px;
+  padding:20px;
+  border-radius:16px;
+  border:1px solid rgba(139,92,246,0.15);
+  background:rgba(11,39,54,0.4);
+  backdrop-filter:blur(10px);
+  box-shadow:0 8px 32px rgba(0,0,0,0.2);
+  transition:all 0.3s ease;
+  display:flex;
+  flex-direction:column;
+}
+.chart-card:hover{
+  border-color:rgba(139,92,246,0.3);
+  transform:translateY(-2px);
+  box-shadow:0 12px 40px rgba(139,92,246,0.2);
+}
+.chart-card canvas{
+  flex:1;
+  max-height:240px;
+}
+
+/* health cards */
+.health-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:20px 0}
+.summary-card{
+  background:rgba(11,39,54,0.5);
+  backdrop-filter:blur(12px);
+  padding:20px;
+  border-radius:16px;
+  border:1px solid rgba(139,92,246,0.2);
+  box-shadow:0 8px 32px rgba(0,0,0,0.25);
+  transition:all 0.3s ease;
+}
+.summary-card:hover{
+  border-color:rgba(139,92,246,0.4);
+  box-shadow:0 12px 40px rgba(139,92,246,0.2);
+  transform:translateY(-3px);
+}
+.summary-title{font-size:.9rem;color:var(--muted);margin-bottom:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px}
+.summary-val{font-size:2rem;font-weight:900;background:linear-gradient(135deg,#8b5cf6,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+
+/* tables */
+.table-card{
+  padding:16px;
+  border-radius:16px;
+  border:1px solid rgba(139,92,246,0.15);
+  background:rgba(11,39,54,0.3);
+  backdrop-filter:blur(10px);
+  overflow:auto;
+  max-height:480px;
+  box-shadow:0 4px 24px rgba(0,0,0,0.2);
+}
+table{width:100%;border-collapse:collapse;font-size:0.92rem}
+th,td{padding:12px 10px;text-align:center;border-bottom:1px solid rgba(139,92,246,0.08)}
+thead th{
+  position:sticky;
+  top:0;
+  background:rgba(11,39,54,0.95);
+  backdrop-filter:blur(10px);
+  z-index:2;
+  color:var(--text);
+  font-weight:700;
+  text-transform:uppercase;
+  font-size:0.82rem;
+  letter-spacing:0.5px;
+  border-bottom:2px solid rgba(139,92,246,0.3);
+}
+tr:hover{background:rgba(139,92,246,0.08);cursor:pointer}
+.badge{padding:6px 12px;border-radius:999px;font-weight:700;font-size:.82rem;box-shadow:0 2px 8px rgba(0,0,0,0.2);text-transform:uppercase;letter-spacing:0.3px}
+.badge.ok{background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff}
+.badge.warn{background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff}
+.badge.crit{background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff}
+.alert-col{color:var(--crit);font-weight:800}
+.status.unsolved{background:#ff6767;color:#2b0000}
+.status.ack{background:#ffec99;color:#3a3200}
+.status.inprogress{background:#93c5fd;color:#0b2547}
+.status.resolved{background:#6ee7b7;color:#013a2a}
+
+/* insights */
+.insights-card{margin-top:12px}
+.insights-list{margin:6px 0 0 16px}
+.insight-item{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin:6px 0}
+.insight-item .txt{flex:1}
+
+/* Forms */
+.form-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:16px;
+  margin-bottom:16px;
+}
+.form-grid .full{
+  grid-column:1/-1;
+}
+.form-grid label{
+  display:block;
+  margin-bottom:6px;
+  font-weight:600;
+}
+.form-actions{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-top:20px;
+  gap:12px;
+}
+
+/* Technician controls */
+.tech-controls{
+  display:flex;
+  gap:12px;
+  align-items:center;
+  margin-bottom:16px;
+  padding:16px;
+  background:rgba(11,39,54,0.3);
+  border-radius:12px;
+  border:1px solid rgba(139,92,246,0.15);
+}
+
+/* Technicians tab */
+.tech-table .name{font-weight:800;text-align:left}
+.rating{letter-spacing:1px}
+
+/* Drawer (technicians) */
+.drawer{
+  position:fixed;top:0;right:-100%;width:420px;max-width:92vw;height:100vh;
+  background:rgba(7,18,38,0.96);backdrop-filter:blur(12px);
+  border-left:1px solid rgba(255,255,255,0.08);box-shadow:-10px 0 30px rgba(0,0,0,0.3);
+  transition:right .28s ease, visibility .28s ease, opacity .28s ease;
+  z-index:1000;padding:16px;overflow:auto;
+  visibility:hidden;opacity:0;
+}
+.drawer.open{right:0;visibility:visible;opacity:1}
+.drawer .close{position:sticky;top:0;display:flex;justify-content:flex-end;margin-bottom:12px}
+.drawer h3{margin:6px 0 10px}
+
+/* owner heat/grid */
+.heat-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:12px}
+.heat-cell{
+  background:rgba(11,39,54,0.4);
+  backdrop-filter:blur(8px);
+  border-radius:12px;
+  padding:16px;
+  text-align:center;
+  border:1px solid rgba(139,92,246,0.2);
+  transition:all 0.3s ease;
+}
+.heat-cell:hover{
+  border-color:rgba(139,92,246,0.4);
+  transform:translateY(-2px);
+  box-shadow:0 8px 24px rgba(139,92,246,0.15);
+}
+.dot{width:12px;height:12px;border-radius:50%;display:inline-block;margin-right:6px;box-shadow:0 0 8px currentColor}
+.dot.ok{background:var(--ok)}.dot.warn{background:var(--warn)}.dot.crit{background:var(--crit)}
+.note{font-size:.78rem;color:var(--muted);margin-top:6px}
+
+/* Toast (chart info) */
+.toast{
+  position:fixed;right:18px;bottom:18px;z-index:1300;min-width:240px;max-width:70vw;
+  background:rgba(10,34,51,0.96);border:1px solid rgba(255,255,255,0.08);
+  color:var(--text);border-radius:12px;padding:10px 12px;box-shadow:0 10px 30px rgba(0,0,0,0.4);
+  opacity:0;transform:translateY(12px);pointer-events:none;transition:opacity .18s ease, transform .18s ease;
+}
+.toast.show{opacity:1;transform:translateY(0);pointer-events:auto}
+
+@media(max-width:980px){
+  .charts{grid-template-columns:1fr}
+  .grid-4{grid-template-columns:repeat(2,1fr)}
+  .health-summary{grid-template-columns:1fr}
+}
+@media(min-width:981px) and (max-width:1280px){
+  .charts{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:640px){.grid-4{grid-template-columns:1fr}.title h1{font-size:1rem}}
+</style>
+</head>
+<body class="login-bg">
+<div class="container">
+
+   <!-- header -->
+  <div class="header" style="margin-bottom:24px">
+    <div class="title">
+      <img src="logo.jpeg" alt="Logo" class="brand">
+      <div>
+        <h1>ViscoTexx</h1>
+        <div class="small">Real-time plant telemetry</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modern slide-in notifications -->
+  <div id="notifDrawer" class="notif-drawer" aria-hidden="true">
+    <div class="notif-head">
+      <div class="small" style="color:var(--muted)"><strong>Notifications</strong></div>
+      <div style="display:flex;gap:8px">
+        <button class="btn ghost sm" onclick="markAllSeen()">Mark all read</button>
+        <button class="btn sm" onclick="toggleNotifs()">Close ✕</button>
+      </div>
+    </div>
+    <div id="notifList"></div>
+  </div>
+
+  <!-- LOGIN -->
+  <div id="loginCard" class="login-card">
+    <div style="text-align:center;margin-bottom:32px">
+      <img src="logo.jpeg" alt="ViscoTexx Logo" class="brand-login">
+      <h2 style="margin-bottom:8px">ViscoTexx</h2>
+      <div class="small" style="color:var(--muted);opacity:0.8">Sign in to access your dashboard</div>
+    </div>
+    <input id="username" class="input" placeholder="Username" autocomplete="username">
+    <input id="password" type="password" class="input" placeholder="Password" autocomplete="current-password" onkeypress="if(event.key==='Enter')login()">
+    <button class="btn" onclick="login()" style="width:100%;margin-top:24px">Sign in</button>
+    <p id="loginError" class="small" style="color:#ff5252;margin-top:16px;font-weight:500;text-align:center"></p>
+    <div class="small" style="margin-top:24px;padding-top:24px;border-top:1px solid rgba(139,92,246,0.15);color:var(--muted);opacity:0.7;text-align:center;font-size:0.82rem">
+      <br>
+      <span style="opacity:0.6"></span>
+    </div>
+  </div>
+
+  <!-- APP WRAPPER -->
+  <div id="app" style="display:none">
+
+     <!-- TOPBAR -->
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+        <div class="small" id="roleTag">Logged in as —</div>
+        <div class="tabbar" id="tabbar">
+          <div class="tab active" id="tab-manager">Manager</div>
+          <div class="tab" id="tab-technician">Technician</div>
+          <div class="tab" id="tab-owner">Owner</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <button id="bellBtn" class="bell-btn" title="Notifications" onclick="toggleNotifs()" style="display:inline-flex">
+          <span class="bell-icon">🔔</span>
+          <span id="bellCount" class="bell-count" style="display:none">0</span>
+        </button>
+        <div class="small">WS: <span id="wsState">disconnected</span></div>
+        <button id="connectBtn" class="btn sm" onclick="toggleConnect()">Connect</button>
+        <button id="pauseBtn" class="btn ghost sm" onclick="togglePause()" disabled>Pause</button>
+        <button class="btn ghost sm" onclick="logout()">Logout</button>
+      </div>
+    </div>
+
+    <!-- MANAGER VIEW -->
+    <div id="managerView">
+     <!-- inner tabs -->
+     <div class="m-subtabs" id="mSubtabs">
+       <div class="m-subtab active" data-tab="live" onclick="switchManagerTab('live')">Live Readings</div>
+       <div class="m-subtab" data-tab="ticket" onclick="switchManagerTab('ticket')">Raise Ticket</div>
+       <div class="m-subtab" data-tab="insights" onclick="switchManagerTab('insights')">Insights</div>
+       <div class="m-subtab" data-tab="techs" onclick="switchManagerTab('techs')">Technicians</div>
+     </div>
+
+     <!-- LIVE TAB -->
+     <div id="mTab-live">
+       <!-- Machine Selector Header -->
+       <div class="card" style="padding:16px;margin-bottom:16px;background:linear-gradient(135deg,rgba(139,92,246,0.2),rgba(6,182,212,0.1));border:2px solid rgba(139,92,246,0.4)">
+         <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap">
+           <div style="display:flex;align-items:center;gap:12px">
+             <span style="font-size:1.5rem">🏭</span>
+             <div>
+               <div class="small" style="color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px">Viewing Data For:</div>
+               <div style="font-size:1.3rem;font-weight:900;background:linear-gradient(135deg,#8b5cf6,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text" id="selectedMachineLabel">All Machines</div>
+             </div>
+           </div>
+           <div style="display:flex;align-items:center;gap:12px">
+             <label class="small" style="color:var(--text);font-weight:700;text-transform:uppercase;letter-spacing:0.5px">Select Machine:</label>
+             <select id="machineSelector" class="input" style="max-width:180px;margin:0;font-size:1.05rem;font-weight:700;padding:12px 16px">
+               <option value="all">All Machines</option>
+               <option value="M1">Machine M1</option>
+               <option value="M2">Machine M2</option>
+               <option value="M3">Machine M3</option>
+               <option value="M4">Machine M4</option>
+               <option value="M5">Machine M5</option>
+               <option value="M6">Machine M6</option>
+             </select>
+           </div>
+         </div>
+       </div>
+
+       <!-- KPI Cards -->
+       <div class="grid-4">
+         <div class="card">
+           <div class="small" style="color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px">Viscosity</div>
+           <div class="kpi" id="m_visc">--</div>
+           <small style="color:var(--muted);font-size:0.78rem">Range: 2.0-3.6</small>
+         </div>
+         <div class="card">
+           <div class="small" style="color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px">Moisture</div>
+           <div class="kpi" id="m_moist">--</div>
+           <small style="color:var(--muted);font-size:0.78rem">Alert if &gt; 800</small>
+         </div>
+         <div class="card">
+           <div class="small" style="color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px">Air Bubble</div>
+           <div class="kpi" id="m_air">--</div>
+           <small style="color:var(--muted);font-size:0.78rem">0 = Clear</small>
+         </div>
+         <div class="card">
+           <div class="small" style="color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px">System Status</div>
+           <div class="kpi" id="m_status">--</div>
+           <small style="color:var(--muted);font-size:0.78rem">Pass / Fail</small>
+         </div>
+       </div>
+
+       <!-- Controls Section -->
+       <div class="card" style="padding:16px;margin-bottom:16px">
+         <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
+           <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+             <label class="small" style="color:var(--muted);font-weight:600">Date: <span style="color:var(--ok);font-size:0.7rem">● LIVE</span></label>
+             <input type="date" id="reportDatePicker" class="input" style="max-width:180px;margin:0">
+             <button class="btn sm" id="btnLoadDate">Load</button>
+             <button class="btn sm ghost" id="btnExportPDF">📄 Export PDF</button>
+           </div>
+           <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+             <label class="small" style="color:var(--muted);font-weight:600">Table Filter (Severity):</label>
+             <select id="severityFilter" class="input" style="max-width:140px;margin:0">
+               <option value="all">All</option>
+               <option value="crit">Critical</option>
+               <option value="warn">Warning</option>
+               <option value="ok">OK</option>
+             </select>
+           </div>
+         </div>
+       </div>
+
+       <!-- Live Charts -->
+       <div class="charts">
+         <div class="chart-card">
+           <h3 class="mini" style="margin:0 0 12px 0;font-size:0.95rem;font-weight:700;color:var(--text)">Viscosity</h3>
+           <canvas id="viscosityChart"></canvas>
+         </div>
+         <div class="chart-card">
+           <h3 class="mini" style="margin:0 0 12px 0;font-size:0.95rem;font-weight:700;color:var(--text)">Moisture</h3>
+           <canvas id="moistureChart"></canvas>
+         </div>
+         <div class="chart-card">
+           <h3 class="mini" style="margin:0 0 12px 0;font-size:0.95rem;font-weight:700;color:var(--text)">Air Bubble</h3>
+           <canvas id="airChart"></canvas>
+         </div>
+       </div>
+
+       <!-- Health Summary -->
+       <div class="health-summary">
+         <div class="summary-card">
+           <div class="summary-title">Active Alerts</div>
+           <div class="summary-val" id="hs_active">0</div>
+           <div class="small" style="color:var(--muted)">Warn + Critical (not resolved)</div>
+         </div>
+         <div class="summary-card">
+           <div class="summary-title">Pending Issues</div>
+           <div class="summary-val" id="hs_pending">0</div>
+           <div class="small" style="color:var(--muted)">Unresolved only</div>
+         </div>
+         <div class="summary-card">
+           <div class="summary-title">Resolved Today</div>
+           <div class="summary-val" id="hs_resolved">0</div>
+           <div class="small" style="color:var(--muted)">Auto/Manual resolutions</div>
+         </div>
+       </div>
+
+
+
+      <div class="card table-card" id="managerRecordsSection">
+        <h3 style="margin-bottom:8px">All Recent Records</h3>
+        <div class="small" id="recentSummary" style="margin-bottom:8px;color:var(--muted)">Waiting for data…</div>
+        <table id="managerTable">
+          <thead>
+            <tr>
+              <th>#</th><th>Time</th><th>Machine</th><th>Viscosity</th><th>Moisture</th><th>Air Bubble</th>
+              <th>Valve</th><th>Communication</th><th>PowerSurge</th><th>Alert</th>
+              <th>Status</th><th>Result</th><th>Action</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div> <!-- end mTab-live -->
+
+    <!-- TICKET TAB -->
+    <div id="mTab-ticket" style="display:none">
+        <div class="card" style="padding:24px">
+          <h3 style="margin-bottom:20px;font-size:1.2rem">🎫 Create Maintenance Ticket</h3>
+          
+          <div class="form-grid">
+            <div class="full">
+              <label class="small" style="font-weight:700;margin-bottom:8px;display:block;color:var(--text)">Issue Title*</label>
+              <input id="tk_title" class="input" placeholder="e.g., Viscosity high in line-2 mixer" required>
+            </div>
+            
+            <div>
+              <label class="small" style="font-weight:700;margin-bottom:8px;display:block;color:var(--text)">Priority*</label>
+              <select id="tk_priority" class="input">
+                <option>Low</option>
+                <option selected>Medium</option>
+                <option>High</option>
+                <option>Urgent</option>
+              </select>
+            </div>
+            
+            <div>
+              <label class="small" style="font-weight:700;margin-bottom:8px;display:block;color:var(--text)">Machine*</label>
+              <select id="tk_machine" class="input">
+                <option value="">Select Machine</option>
+                <option value="M1">Machine M1</option>
+                <option value="M2">Machine M2</option>
+                <option value="M3">Machine M3</option>
+                <option value="M4">Machine M4</option>
+                <option value="M5">Machine M5</option>
+                <option value="M6">Machine M6</option>
+                <option value="General">General/Multiple</option>
+              </select>
+            </div>
+            
+            <div>
+              <label class="small" style="font-weight:700;margin-bottom:8px;display:block;color:var(--text)">Assign To*</label>
+              <select id="tk_assignee" class="input">
+                <option>A. Sharma</option>
+                <option>R. Mehta</option>
+                <option>P. Nair</option>
+                <option>D. Patel</option>
+              </select>
+            </div>
+            
+            <div class="full">
+              <label class="small" style="font-weight:700;margin-bottom:8px;display:block;color:var(--text)">Due Date</label>
+              <input id="tk_due" type="date" class="input" style="max-width:240px">
+            </div>
+            
+            <div class="full">
+              <label class="small" style="font-weight:700;margin-bottom:8px;display:block;color:var(--text)">Description</label>
+              <textarea id="tk_desc" class="input" rows="4" placeholder="Describe the issue, symptoms, when it started, steps already tried..."></textarea>
+            </div>
+          </div>
+          
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:24px;padding-top:20px;border-top:1px solid rgba(139,92,246,0.2)">
+            <span id="tk_msg" class="small" style="color:var(--muted)"></span>
+            <div style="display:flex;gap:12px">
+              <button class="btn ghost" onclick="resetTicketForm()">Reset</button>
+              <button class="btn" onclick="createTicket()">Create Ticket</button>
+            </div>
+          </div>
+        </div>
+        
+        <div class="card table-card" id="managerTicketsSection" style="margin-top:16px">
+          <h3 style="margin-bottom:12px">📋 All Maintenance Tickets</h3>
+          <table id="managerTicketsTable">
+            <thead>
+              <tr>
+                <th>ID</th><th>Created</th><th>Machine</th><th>Title</th><th>Priority</th>
+                <th>Assign To</th><th>Due</th><th>Status</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div> <!-- end mTab-ticket -->
+
+      <!-- INSIGHTS TAB -->
+      <div id="mTab-insights" style="display:none">
+        <div class="card insights-card">
+          <div class="controls" style="margin-bottom:8px;gap:8px;display:flex;align-items:center;flex-wrap:wrap">
+            <label class="small" style="color:var(--muted);font-weight:600">Date: <span style="color:var(--ok);font-size:0.7rem">● LIVE</span></label>
+            <input type="date" id="reportDatePicker2" class="input" style="max-width:200px;margin:0 8px">
+            <button class="btn sm" id="btnLoadDate2">Load</button>
+            <!-- Removed broken Download Report button here -->
+          </div>
+          <h3 class="mini" style="margin:6px 8px">Insights</h3>
+          <div id="insightContainer" class="insights-list"></div>
+        </div>
+      </div> <!-- end mTab-insights -->
+
+      <!-- TECHNICIANS TAB -->
+      <div id="mTab-techs" style="display:none">
+        <div class="card table-card">
+          <h3 style="margin-bottom:8px">Technicians</h3>
+          <table id="mgrTechsTable" class="tech-table">
+            <thead>
+              <tr>
+                <th>Technician</th><th>Specialization</th><th>Rating</th><th>Open Tickets</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div> <!-- end mTab-techs -->
+    </div> <!-- end managerView -->
+
+     <!-- TECHNICIAN VIEW -->
+    <div id="technicianView" style="display:none">
+      <!-- Welcome Section -->
+      <div class="card" style="margin-bottom:20px;padding:24px;background:linear-gradient(135deg,rgba(139,92,246,0.15),rgba(6,182,212,0.1));display:flex;align-items:center;gap:20px">
+        <img src="logo.jpeg" alt="Logo" style="width:60px;height:60px;border-radius:12px;object-fit:contain">
+        <div>
+          <h2 style="margin:0 0 8px 0;font-size:1.5rem">👨‍🔧 My Dashboard</h2>
+          <p class="small" style="color:var(--muted);margin:0">Track your assigned tickets and system readings</p>
+        </div>
+      </div>
+
+      <!-- KPI Cards -->
+      <div class="grid-4">
+        <div class="card">
+          <div class="small" style="color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px">Viscosity</div>
+          <div class="kpi" id="t_visc">--</div>
+          <small style="color:var(--muted);font-size:0.78rem">Range: 2.0-3.6</small>
+        </div>
+        <div class="card">
+          <div class="small" style="color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px">Moisture</div>
+          <div class="kpi" id="t_moist">--</div>
+          <small style="color:var(--muted);font-size:0.78rem">Alert if &gt; 800</small>
+        </div>
+        <div class="card">
+          <div class="small" style="color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px">Air Bubble</div>
+          <div class="kpi" id="t_air">--</div>
+          <small style="color:var(--muted);font-size:0.78rem">0 = Clear</small>
+        </div>
+        <div class="card">
+          <div class="small" style="color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px">My Tickets</div>
+          <div class="kpi" id="t_ticketCount">0</div>
+          <small style="color:var(--muted);font-size:0.78rem">Open tickets</small>
+        </div>
+      </div>
+
+      <!-- Technician profile selector -->
+      <div class="tech-controls">
+        <label class="small" style="color:var(--text);font-weight:700;text-transform:uppercase;letter-spacing:0.5px">Technician Profile:</label>
+        <select id="techProfile" class="input" style="max-width:240px;margin:0">
+          <option>A. Sharma</option>
+          <option>R. Mehta</option>
+          <option>P. Nair</option>
+          <option>D. Patel</option>
+        </select>
+      </div>
+
+      <!-- Technician tickets -->
+      <div class="card table-card">
+        <h3 style="margin-bottom:16px">📋 My Assigned Tickets</h3>
+        <table id="techTicketsTable">
+          <thead>
+            <tr>
+              <th>ID</th><th>Created</th><th>Machine</th><th>Title</th><th>Priority</th>
+              <th>Due</th><th>Status</th><th>Update</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+     <!-- OWNER VIEW -->
+    <div id="ownerView" style="display:none">
+      <!-- Welcome Section -->
+      <div class="card" style="margin-bottom:20px;padding:24px;background:linear-gradient(135deg,rgba(139,92,246,0.15),rgba(6,182,212,0.1));display:flex;align-items:center;gap:20px">
+        <img src="logo.jpeg" alt="Logo" style="width:60px;height:60px;border-radius:12px;object-fit:contain">
+        <div>
+          <h2 style="margin:0 0 8px 0;font-size:1.5rem">📊 Executive Dashboard</h2>
+          <p class="small" style="color:var(--muted);margin:0">Monitor overall quality metrics and system performance</p>
+        </div>
+      </div>
+
+      <!-- KPI Cards -->
+      <div class="grid-4">
+        <div class="card">
+          <div class="small" style="color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px">Total Tests</div>
+          <div class="kpi" id="o_total">--</div>
+          <small style="color:var(--muted);font-size:0.78rem">All time</small>
+        </div>
+        <div class="card">
+          <div class="small" style="color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px">Passed</div>
+          <div class="kpi" id="o_pass" style="color:var(--ok)">--</div>
+          <small style="color:var(--muted);font-size:0.78rem">Success count</small>
+        </div>
+        <div class="card">
+          <div class="small" style="color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px">Failed</div>
+          <div class="kpi" id="o_fail" style="color:var(--crit)">--</div>
+          <small style="color:var(--muted);font-size:0.78rem">Failure count</small>
+        </div>
+        <div class="card">
+          <div class="small" style="color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px">Last Result</div>
+          <div class="kpi" id="o_status">--</div>
+          <small style="color:var(--muted);font-size:0.78rem">Latest test</small>
+        </div>
+      </div>
+
+      <!-- Analytics Charts -->
+      <div class="charts">
+        <div class="chart-card">
+          <h3 class="mini" style="margin:0 0 12px 0;font-size:0.95rem;font-weight:700;color:var(--text)">Quality Trend (Pass %)</h3>
+          <canvas id="ownerPassRate"></canvas>
+        </div>
+        <div class="chart-card">
+          <h3 class="mini" style="margin:0 0 12px 0;font-size:0.95rem;font-weight:700;color:var(--text)">Throughput (Tests / min)</h3>
+          <canvas id="ownerThroughput"></canvas>
+        </div>
+        <div class="chart-card">
+          <h3 class="mini" style="margin:0 0 12px 0;font-size:0.95rem;font-weight:700;color:var(--text)">Health Mix</h3>
+          <canvas id="ownerHealth"></canvas>
+        </div>
+      </div>
+
+      <!-- Metro Health Snapshot -->
+      <div class="card" style="margin-top:20px">
+        <h3>🌍 Metro Health Snapshot</h3>
+        <div class="small" style="color:var(--muted);margin:12px 0 16px 0">Each tile shows the <strong>pass rate</strong> from sampled tests. Events are assigned round-robin to metros.</div>
+        <div class="heat-grid" id="heatGrid"></div>
+      </div>
+    </div>
+
+    <!-- ISSUE DETAILS VIEW -->
+    <div id="issueView" style="display:none">
+      <div style="margin-bottom:16px">
+        <button class="btn ghost sm" onclick="backToManager()">← Back</button>
+        <span class="small" id="issueIdLabel" style="color:var(--muted);margin-left:12px"></span>
+      </div>
+      <div class="card">
+        <h2 style="margin-bottom:16px">System Alert Details</h2>
+        <div style="display:grid;gap:16px">
+          <div><strong>Reason:</strong> <span id="issueReason">—</span></div>
+          <div><strong>Suggested Fix:</strong> <span id="issueFix">—</span></div>
+          <div><strong>Severity:</strong> <span id="issueSeverity">—</span></div>
+          <div>
+            <strong>Current Status:</strong>
+            <div style="margin-top:8px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+              <span id="issueStatusBadge" class="badge status unsolved">Unresolved</span>
+              <select id="issueStatusSelect" class="input" style="max-width:220px">
+                <option value="unsolved">Unresolved</option>
+                <option value="ack">Acknowledged</option>
+                <option value="inprogress">In Progress</option>
+                <option value="resolved">Resolved</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;gap:12px;justify-content:flex-end;margin-top:24px;padding-top:24px;border-top:1px solid rgba(139,92,246,0.2)">
+          <button class="btn ghost" onclick="setIssueStatus('ack')">Acknowledge</button>
+          <button class="btn ghost" onclick="setIssueStatus('inprogress')">Mark In Progress</button>
+          <button class="btn" onclick="setIssueStatus('resolved')">Mark Resolved</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide-in drawer for Technicians tab -->
+    <div id="techDrawer" class="drawer" aria-hidden="true">
+      <div class="close">
+        <button class="btn ghost sm" onclick="closeDrawer()">Close ✕</button>
+      </div>
+      <div id="drawerContent"></div>
+    </div>
+
+  </div> <!-- END APP -->
+
+  <!-- Toast -->
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+</div> <!-- END container -->
+<script src="config.js"></script>
+<script>
+/* ===== state & credentials ===== */
+const CREDENTIALS = {
+  manager:     { u: 'manager',     p: 'manager123' },
+  technician:  { u: 'technician',  p: 'tech123' },
+  owner:       { u: 'owner',       p: 'owner123' }
+};
+
+let role = null, ws = null, paused = false, rowCounter = 0, totalCount = 0, passCount = 0, failCount = 0;
+let recordLimit = 120;
+let currentReportDateStr = null;
+let currentTechnicianName = null;
+
+/* Owner aggregations */
+const ownerRolling = []; const ROLL_N = 40; const perMinute = new Map(); const sevMix = {ok:0,warn:0,crit:0};
+const METROS = ['Mumbai','Delhi','Bengaluru','Chennai','Hyderabad'];
+const metroStats = METROS.map(() => ({total:0,pass:0}));
+let metroPtr = 0;
+
+/* Machines (6) */
+const MACHINES = ['M1','M2','M3','M4','M5','M6'];
+const machineStats = MACHINES.map(() => ({ total:0, pass:0, last:{ visc:'--', moist:'--', air:'--', result:'--' } }));
+let machinePtr = 0;
+
+function getMachineId(obj){
+  if (obj.MachineId) return String(obj.MachineId);
+  if (obj.machine) return String(obj.machine);
+  if (obj.Machine) return String(obj.Machine);
+  const id = MACHINES[machinePtr % MACHINES.length]; machinePtr++; return id;
+}
+
+/* Machine selection for charts/table */
+let selectedMachine = 'all';
+
+/* Update machine label display */
+function updateMachineLabel() {
+  const label = document.getElementById('selectedMachineLabel');
+  if (label) {
+    label.textContent = selectedMachine === 'all' ? 'All Machines' : `Machine ${selectedMachine}`;
+  }
+}
+
+/* Records memory */
+const recordsById = new Map();
+
+/* Tickets (localStorage) */
+const TICKET_KEY = 'vm_tickets';
+let tickets = loadTickets();
+function loadTickets(){ try{ return JSON.parse(localStorage.getItem(TICKET_KEY)||'[]'); }catch{return []} }
+function saveTickets(){ localStorage.setItem(TICKET_KEY, JSON.stringify(tickets)); }
+
+/* helpers */
+const $ = s => document.querySelector(s), $$ = s => document.querySelectorAll(s);
+function now() { return new Date().toLocaleTimeString(); }
+function setText(sel, t) { const e = $(sel); if (e) e.innerText = t; }
+function ordinal(n) { const s = ["th","st","nd","rd"], v = n % 100; return n + (s[(v-20)%10] || s[v] || s[0]); }
+function formatDateLong(dStr) {
+  if (!dStr) return new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+  const d = new Date(dStr + 'T00:00:00');
+  return `${ordinal(d.getDate())} ${d.toLocaleString('en-GB', { month: 'long' })} ${d.getFullYear()}`;
+}
+
+/* Manager inner tabs */
+function switchManagerTab(tab){
+  ['live','ticket','insights','techs'].forEach(t=>{
+    const el = document.getElementById('mTab-'+t);
+    if (el) el.style.display = (t===tab)?'block':'none';
+    const sub = Array.from(document.querySelectorAll('.m-subtab')).find(x=>x.dataset.tab===t);
+    if (sub) sub.classList.toggle('active', t===tab);
+  });
+  if (tab==='ticket') renderManagerTickets();
+  if (tab==='insights') { updateInsights(); renderInsights(); }
+  if (tab==='techs') renderTechniciansTab();
+}
+
+/* Login */
+function login() {
+  const username = $('#username').value.trim();
+  const password = $('#password').value.trim();
+  $('#loginError').innerText = '';
+  if (!username || !password) { $('#loginError').innerText = 'Please enter both username and password'; return; }
+
+  let foundRole = null;
+  // Named technician accounts
+  const TECH_ACCOUNTS = { 'a.sharma':'A. Sharma', 'r.mehta':'R. Mehta', 'p.nair':'P. Nair', 'd.patel':'D. Patel' };
+  const uLow = username.toLowerCase();
+  if (TECH_ACCOUNTS[uLow] && password === 'tech123') { foundRole = 'technician'; currentTechnicianName = TECH_ACCOUNTS[uLow]; }
+  // Default role accounts
+  if (!foundRole) {
+    for (const r in CREDENTIALS) {
+      if (CREDENTIALS[r].u === uLow && CREDENTIALS[r].p === password) { foundRole = r; break; }
+    }
+  }
+  if (!foundRole) { $('#loginError').innerText = 'Invalid username or password'; return; }
+
+  role = foundRole;
+  $('#loginCard').style.display = 'none';
+  $('#app').style.display = 'block';
+  document.body.classList.remove('login-bg');
+  const roleText = (role === 'technician' && currentTechnicianName)
+    ? `Logged in as Technician — ${currentTechnicianName}`
+    : `Logged in as ${role.charAt(0).toUpperCase() + role.slice(1)}`;
+  setText('#roleTag', roleText);
+
+  $$('.tab').forEach(tab => {
+    const tabRole = tab.id.replace('tab-', '');
+    if (tabRole === role) { tab.classList.add('active'); tab.onclick = () => selectView(role); }
+    else { tab.classList.remove('active'); tab.onclick = () => {}; tab.style.opacity = '0.45'; }
+  });
+
+  selectView(role);
+  if (role === 'owner') initHeat();
+  // Lock technician profile when named login (hide dropdown and bind to the technician)
+  if (role === 'technician' && currentTechnicianName) {
+    const sel = document.getElementById('techProfile');
+    if (sel) {
+      sel.innerHTML = '';
+      const opt = document.createElement('option');
+      opt.textContent = currentTechnicianName;
+      opt.value = currentTechnicianName;
+      sel.appendChild(opt);
+      sel.value = currentTechnicianName;
+      sel.disabled = true;
+    }
+    const tc = document.querySelector('.tech-controls');
+    if (tc) tc.style.display = 'none';
+  }
+  updateControls();
+  renderManagerTickets();
+  renderTechTickets();
+  switchManagerTab('live');
+  updateNotifications(); // initialize bell
+}
+
+function logout() { location.reload(); }
+
+function selectView(v) {
+  if ((role === 'manager' && v !== 'manager') || 
+      (role === 'technician' && v !== 'technician') || 
+      (role === 'owner' && v !== 'owner')) return;
+
+  $('#managerView').style.display = v === 'manager' ? 'block' : 'none';
+  $('#technicianView').style.display = v === 'technician' ? 'block' : 'none';
+  $('#ownerView').style.display = v === 'owner' ? 'block' : 'none';
+  $('#issueView').style.display = 'none';
+
+  $$('.tab').forEach(tab => tab.classList.toggle('active', tab.id === `tab-${v}`));
+  if (v === 'technician') {
+    if (typeof currentTechnicianName === 'string' && currentTechnicianName) {
+      const tc = document.querySelector('.tech-controls'); if (tc) tc.style.display = 'none';
+      const selFix = document.getElementById('techProfile');
+      if (selFix) {
+        selFix.innerHTML = '';
+        const opt = document.createElement('option'); opt.value = currentTechnicianName; opt.textContent = currentTechnicianName;
+        selFix.appendChild(opt); selFix.value = currentTechnicianName; selFix.disabled = true;
+      }
+    }
+    renderTechTickets();
+  }
+}
+
+/* analyzer */
+function analyze(obj) {
+  const v = parseFloat(obj.ViscosityValue), m = parseFloat(obj.MoistureValue), o = parseInt(obj.AirBubbleValue ?? obj.OpticalValue);
+  const desc = (obj.Description || '').toLowerCase();
+  let sev = 'ok', reasons = [], fix = [];
+  if (desc.includes('communication')) { reasons.push('Cloud/MQTT link down'); fix.push('Verify broker & network'); sev = 'crit'; }
+  if (desc.includes('actuator')) { reasons.push('Actuator jam'); fix.push('Inspect actuator & flow path'); sev = 'crit'; }
+  if (desc.includes('power')) { reasons.push('Power fluctuation'); fix.push('Check PSU/stabilizer'); if (sev !== 'crit') sev = 'warn'; }
+  if (desc.includes('partial')) { reasons.push('Partial sensor failure'); fix.push('Reseat connectors/replace sensor'); if (sev !== 'crit') sev = 'warn'; }
+  if (reasons.length === 0) {
+    if (isNaN(v) || v <= 0) { reasons.push('Viscosity invalid'); fix.push('Calibrate or rewire'); sev = 'crit'; }
+    else {
+      if (v > 3.6) { reasons.push(`Viscosity high (${v})`); fix.push('Reduce thinner / check mixer'); if (sev !== 'crit') sev = 'warn'; }
+      if (v < 2.0) { reasons.push(`Viscosity low (${v})`); fix.push('Increase feed / check leaks'); if (sev !== 'crit') sev = 'warn'; }
+    }
+    if (m > 800) { reasons.push(`Moisture high (${m})`); fix.push('Check dryer/PTC heater'); if (sev !== 'crit') sev = 'warn'; }
+    if (o === 0) { reasons.push('Air bubble blocked'); fix.push('Clean optics / run bubble crash'); if (sev !== 'crit') sev = 'crit'; }
+  }
+  if (reasons.length === 0) { reasons = ['Within expected range']; fix = ['No action required']; }
+  return { sev, reason: reasons.join('; '), fix: fix[0] };
+}
+function sevBadge(sev) {
+  if (sev === 'ok') return `<span class="badge ok">OK</span>`;
+  if (sev === 'warn') return `<span class="badge warn">Warn</span>`;
+  return `<span class="badge crit">Critical</span>`;
+}
+function statusBadge(status) {
+  if (status === 'resolved') return '<span class="badge status resolved">Resolved</span>';
+  if (status === 'ack') return '<span class="badge status ack">Acknowledged</span>';
+  if (status === 'inprogress') return '<span class="badge status inprogress">In Progress</span>';
+  return '<span class="badge status unsolved">Unresolved</span>';
+}
+
+/* charts */
+function makeChart(id, color) {
+  const ctx = document.getElementById(id).getContext('2d');
+  return new Chart(ctx, {
+    type: 'line',
+    data: { labels: [], datasets: [{ data: [], borderColor: color, backgroundColor: 'rgba(255,255,255,0.02)', tension: .25, pointRadius: 1 }] },
+    options: { responsive: true, maintainAspectRatio: false,
+      layout:{padding:{right:8,left:8,top:0,bottom:0}},
+      plugins: { legend: { display: false }, tooltip:{enabled:true} },
+      interaction:{mode:'nearest',intersect:false},
+      scales: {
+        x: {
+          ticks: { color: 'rgba(255,255,255,0.6)', autoSkip:true, maxTicksLimit:8, maxRotation:45, minRotation:30 },
+          grid:{color:'rgba(255,255,255,0.05)'}
+        },
+        y: { ticks: { color: 'rgba(255,255,255,0.6)' }, grid:{color:'rgba(255,255,255,0.05)'} }
+      } }
+  });
+}
+const viscChart = makeChart('viscosityChart', '#ff76b0');
+const moistChart = makeChart('moistureChart', '#00f5ff');
+const airChart = makeChart('airChart', '#ffd54f');
+
+function makeOwnerLine(id) {
+  const ctx = document.getElementById(id).getContext('2d');
+  return new Chart(ctx, { type: 'line', data: { labels: [], datasets: [{ data: [], tension: .25, pointRadius: 1 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { min: 0, max: 100, ticks: { color: 'rgba(255,255,255,0.7)' } }, x: { ticks: { color: 'rgba(255,255,255,0.6)', autoSkip:true, maxTicksLimit:8, maxRotation:45, minRotation:30 } } } } });
+}
+function makeOwnerBar(id) {
+  const ctx = document.getElementById(id).getContext('2d');
+  return new Chart(ctx, { type: 'bar', data: { labels: [], datasets: [{ data: [] }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { color: 'rgba(255,255,255,0.7)' } }, x: { ticks: { color: 'rgba(255,255,255,0.6)', autoSkip:true, maxTicksLimit:8 } } } } });
+}
+function makeOwnerDoughnut(id) {
+  const ctx = document.getElementById(id).getContext('2d');
+  return new Chart(ctx, { type: 'doughnut', data: { labels: ['OK','Warning','Critical'], datasets: [{ data: [0,0,0] }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: 'rgba(255,255,255,0.8)' } } } } });
+}
+const ownerPass = makeOwnerLine('ownerPassRate');
+const ownerTPM = makeOwnerBar('ownerThroughput');
+const ownerMix = makeOwnerDoughnut('ownerHealth');
+
+function pushLine(chart, val, limit = 80) {
+  const t = now(); chart.data.labels.push(t); chart.data.datasets[0].data.push(val == null ? null : parseFloat(val));
+  if (chart.data.labels.length > limit) { chart.data.labels.shift(); chart.data.datasets[0].data.shift(); }
+  chart.update('none');
+}
+function pushBar(chart, label, val, limit = 20) {
+  chart.data.labels.push(label); chart.data.datasets[0].data.push(val);
+  if (chart.data.labels.length > limit) { chart.data.labels.shift(); chart.data.datasets[0].data.shift(); }
+  chart.update('none');
+}
+function updateDoughnut(chart, ok, warn, crit) { chart.data.datasets[0].data = [ok, warn, crit]; chart.update('none'); }
+
+/* record statuses */
+const STATUS_KEY = id => `issueStatus:${id}`;
+function getStatus(id) { return localStorage.getItem(STATUS_KEY(id)) || 'unsolved'; }
+function setStatus(id, status) { localStorage.setItem(STATUS_KEY(id), status); }
+function getEffectiveStatus(id) {
+  const rec = recordsById.get(id);
+  const raw = getStatus(id);
+  if (rec && rec.analysis && rec.analysis.sev === 'ok' && raw === 'unsolved') return 'resolved';
+  return raw;
+}
+
+/* All Recent Records */
+function addManagerRow(obj) {
+  rowCounter++; totalCount++;
+  if ((obj.SystemResult || '').toLowerCase() === 'pass') passCount++; else failCount++;
+  setText('#o_total', totalCount); setText('#o_pass', passCount); setText('#o_fail', failCount);
+
+  const tbody = $('#managerTable tbody');
+  const tr = document.createElement('tr');
+  const t = now();
+
+  const base = currentReportDateStr || new Date().toISOString().slice(0, 10);
+  const recordId = `${base}-${Date.now()}-${rowCounter}`;
+  const analysis = analyze(obj);
+  const machine = obj.__machine || getMachineId(obj);
+  obj.__machine = machine;
+  recordsById.set(recordId, { payload: obj, analysis, time:t, dateISO:base, machine });
+
+  const effStatus = getEffectiveStatus(recordId);
+
+  tr.setAttribute('data-id', recordId);
+  tr.setAttribute('data-sev', analysis.sev);
+  tr.setAttribute('data-machine', machine);
+  tr.innerHTML = `
+    <td>${rowCounter}</td><td>${t}</td><td>${machine}</td>
+    <td>${obj.ViscosityValue ?? '—'}</td><td>${obj.MoistureValue ?? '—'}</td>
+    <td>${obj.AirBubbleValue ?? obj.OpticalValue ?? '—'}</td>
+    <td>${obj.Valve ?? '—'}</td><td>${obj.Communication ?? '—'}</td><td>${obj.PowerSurge ?? '—'}</td>
+    <td class="alert-col">${obj.Alert ?? '—'}</td>
+    <td class="status-cell">${statusBadge(effStatus)}</td>
+    <td>${obj.SystemResult ?? '—'}</td>
+    <td><button class="btn ghost sm" onclick="raiseTicketFromRecord('${recordId}');event.stopPropagation()">Raise Ticket</button></td>
+  `;
+  tr.addEventListener('click', (e) => { if (e.target.tagName !== 'BUTTON') openIssue(recordId); });
+  tbody.prepend(tr);
+  if (tbody.children.length > recordLimit) tbody.removeChild(tbody.lastChild);
+  if ($('#recentSummary').innerText.trim() === 'Waiting for data…') $('#recentSummary').innerText = `${obj.Description || '—'} — ${obj.SystemResult || '—'}`;
+
+  applySeverityFilter();
+  updateHealthSummary();
+  updateInsights();
+}
+
+function reflectStatusInTable(id) {
+  const row = $(`#managerTable tbody tr[data-id="${CSS.escape(id)}"]`);
+  if (!row) return;
+  const cell = row.querySelector('.status-cell');
+  if (cell) cell.innerHTML = statusBadge(getEffectiveStatus(id));
+}
+
+/* Raise Ticket from record */
+function raiseTicketFromRecord(id){
+  const rec = recordsById.get(id);
+  switchManagerTab('ticket');
+  if(!rec) return;
+  const { payload, analysis, machine } = rec;
+  $('#tk_priority').value = analysis.sev==='crit' ? 'Urgent' : (analysis.sev==='warn' ? 'High' : 'Low');
+  $('#tk_machine').value = machine || '';
+  $('#tk_title').value = (payload.Alert && payload.Alert!=='None') ? payload.Alert : (analysis.reason || 'Viscosity issue');
+  $('#tk_desc').value = `${payload.Description || '—'} | Result: ${payload.SystemResult || '—'} | Auto-note from record ${id}`;
+  const today = new Date().toISOString().slice(0,10);
+  $('#tk_due').value = today;
+  setTimeout(()=>document.getElementById('mTab-ticket').scrollIntoView({behavior:'smooth'}),50);
+}
+
+/* Technicians (manager tab) */
+const TECHS = [
+  { name:'A. Sharma', spec:'Electrical Maintenance', rating:4.5 },
+  { name:'R. Mehta',  spec:'Sensor Calibration',     rating:5.0 },
+  { name:'P. Nair',   spec:'Mechanical Assembly',    rating:4.3 },
+  { name:'D. Patel',  spec:'System Networking',      rating:3.8 },
+];
+function renderTechniciansTab(){
+  const tbody = $('#mgrTechsTable tbody'); tbody.innerHTML='';
+  TECHS.forEach(t=>{
+    const open = tickets.filter(x=>x.assignee===t.name && x.status!=='resolved').length;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="name">${t.name}</td>
+      <td>${t.spec}</td>
+      <td class="rating">${'★'.repeat(Math.round(t.rating))}${'☆'.repeat(5-Math.round(t.rating))}</td>
+      <td>${open}</td>`;
+    tr.onclick = ()=>openDrawer(t.name);
+    tbody.appendChild(tr);
+  });
+}
+function openDrawer(techName){
+  const drawer = $('#techDrawer');
+  const perf = calcTechPerf(techName);
+  const myTickets = tickets.filter(t=>t.assignee===techName);
+  const list = myTickets.map(t=>`
+    <tr>
+      <td>${t.id}</td><td>${t.created}</td>
+      <td><span class="badge" style="background:rgba(139,92,246,0.3);color:var(--text);font-size:0.75rem">${t.machine || 'N/A'}</span></td>
+      <td style="text-align:left">${t.title}</td>
+      <td>${t.priority}</td>
+      <td>${t.due}</td>
+      <td>${statusBadge(mapTicketStatusToBadge(t.status))}</td>
+    </tr>`).join('') || `<tr><td colspan="7" class="small" style="color:var(--muted)">No tickets.</td></tr>`;
+  $('#drawerContent').innerHTML = `
+    <h2 style="margin:4px 0 6px">${techName}</h2>
+    <div class="small" style="color:var(--muted)">Performance summary</div>
+    <div class="grid-4" style="gap:8px;margin:8px 0">
+      <div class="card"><div class="summary-title">Open</div><div class="summary-val">${perf.open}</div></div>
+      <div class="card"><div class="summary-title">Resolved</div><div class="summary-val">${perf.resolved}</div></div>
+      <div class="card"><div class="summary-title">Ack / In-Progress</div><div class="summary-val">${perf.ack + perf.inprogress}</div></div>
+      <div class="card"><div class="summary-title">On-time % (mock)</div><div class="summary-val">${perf.ontime}%</div></div>
+    </div>
+    <h3>Tickets</h3>
+    <div class="table-card" style="max-height:60vh">
+      <table>
+        <thead><tr><th>ID</th><th>Created</th><th>Machine</th><th>Title</th><th>Priority</th><th>Due</th><th>Status</th></tr></thead>
+        <tbody>${list}</tbody>
+      </table>
+    </div>
+    <div style="margin-top:10px;display:flex;gap:8px;justify-content:flex-end">
+      <button class="btn ghost sm" onclick="reassignOldest('${techName}')">Reassign oldest</button>
+      <button class="btn sm" onclick="closeDrawer()">Done</button>
+    </div>
+  `;
+  drawer.classList.add('open'); drawer.setAttribute('aria-hidden','false');
+}
+function closeDrawer(){ const d=$('#techDrawer'); d.classList.remove('open'); d.setAttribute('aria-hidden','true'); }
+function calcTechPerf(name){
+  const my = tickets.filter(t=>t.assignee===name);
+  const perf = {open:0,resolved:0,ack:0,inprogress:0,ontime:100};
+  my.forEach(t=>{
+    if (t.status==='resolved') perf.resolved++;
+    else if (t.status==='ack') perf.ack++;
+    else if (t.status==='inprogress') perf.inprogress++;
+    else perf.open++;
+  });
+  const total = my.length || 1;
+  perf.ontime = Math.round((perf.resolved/total)*100);
+  return perf;
+}
+function reassignOldest(name){
+  const idx = tickets.findIndex(t=>t.assignee===name);
+  if (idx<0) return alert('No tickets to reassign.');
+  const others = TECHS.map(t=>t.name).filter(n=>n!==name);
+  tickets[idx].assignee = others[Math.floor(Math.random()*others.length)];
+  saveTickets(); renderManagerTickets(); renderTechniciansTab(); openDrawer(name);
+}
+
+/* Technician side */
+if (document.getElementById('techProfile')) {
+  document.getElementById('techProfile').addEventListener('change', renderTechTickets);
+}
+
+function renderTechTickets(){
+  // Enforce locking to logged-in technician (if named login)
+  if (typeof currentTechnicianName === 'string' && currentTechnicianName){
+    const tc = document.querySelector('.tech-controls'); if (tc) tc.style.display = 'none';
+    const selFix = document.getElementById('techProfile');
+    if (selFix){
+      selFix.innerHTML = '';
+      const opt = document.createElement('option'); opt.value = currentTechnicianName; opt.textContent = currentTechnicianName;
+      selFix.appendChild(opt); selFix.value = currentTechnicianName; selFix.disabled = true;
+    }
+  }
+  const who = (typeof currentTechnicianName === 'string' && currentTechnicianName)
+    ? currentTechnicianName
+    : (document.getElementById('techProfile')?.value || 'A. Sharma');
+  const tbody = document.querySelector('#techTicketsTable tbody'); 
+  if (!tbody) return;
+  tbody.innerHTML = '';
+  const myTickets = (Array.isArray(tickets)?tickets:[]).filter(t=>t.assignee===who);
+  const openCount = myTickets.filter(t=>t.status!=='resolved').length;
+  
+  // Update ticket count KPI
+  setText('#t_ticketCount', openCount);
+  
+  myTickets.forEach(t=>{
+    const tr = document.createElement('tr');
+    const machineDisplay = t.machine || 'N/A';
+    tr.innerHTML = `
+      <td>${t.id}</td>
+      <td>${t.created}</td>
+      <td><span class="badge" style="background:rgba(139,92,246,0.3);color:var(--text);font-size:0.75rem">${machineDisplay}</span></td>
+      <td style="text-align:left">${t.title}</td>
+      <td>${t.priority}</td>
+      <td>${t.due}</td>
+      <td>${statusBadge(mapTicketStatusToBadge(t.status))}</td>
+      <td>
+        <select class="input" data-id="${t.id}" onchange="updateTicketStatus(this)">
+          <option value="unsolved" ${t.status==='unsolved'?'selected':''}>Unresolved</option>
+          <option value="ack" ${t.status==='ack'?'selected':''}>Acknowledged</option>
+          <option value="inprogress" ${t.status==='inprogress'?'selected':''}>In Progress</option>
+          <option value="resolved" ${t.status==='resolved'?'selected':''}>Resolved</option>
+        </select>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function updateTicketStatus(sel){
+  const id = sel.getAttribute('data-id');
+  const newStatus = sel.value;
+  const t = tickets.find(x=>x.id===id);
+  if (!t) return;
+  t.status = newStatus;
+  saveTickets();
+  renderManagerTickets();
+  renderTechTickets();
+  renderTechniciansTab();
+  updateNotifications();
+}
+
+function mapTicketStatusToBadge(s){
+  if (s==='ack') return 'ack';
+  if (s==='inprogress') return 'inprogress';
+  if (s==='resolved') return 'resolved';
+  return 'unsolved';
+}
+
+/* Manager tickets */
+function resetTicketForm(){
+  $('#tk_priority').value='Medium';
+  $('#tk_title').value='';
+  $('#tk_machine').value='';
+  $('#tk_assignee').value='A. Sharma';
+  // Default due date to today for faster ticketing
+  try { const todayStr = new Date().toISOString().slice(0,10); $('#tk_due').value=todayStr; } catch {}
+  $('#tk_desc').value='';
+  setText('#tk_msg','');
+}
+function createTicket(){
+  const priority=$('#tk_priority').value;
+  const title=$('#tk_title').value.trim();
+  const machine=$('#tk_machine').value;
+  const assignee=$('#tk_assignee').value;
+  let due=$('#tk_due').value;
+  const desc=$('#tk_desc').value.trim();
+
+  if(!title){ setText('#tk_msg','Please enter an issue title.'); $('#tk_msg').style.color='#ff8a8a'; return; }
+  if(!machine){ setText('#tk_msg','Please select a machine.'); $('#tk_msg').style.color='#ff8a8a'; return; }
+  // If due not selected, auto-fill with today
+  if(!due){ try { due = new Date().toISOString().slice(0,10); $('#tk_due').value = due; } catch {} }
+
+  try {
+    if (!Array.isArray(tickets)) tickets = [];
+    const id='T-'+Date.now();
+    const created=new Date().toLocaleString();
+    const status='unsolved';
+    tickets.unshift({id,created,title,machine,sensor:'Viscosity',priority,assignee,due,desc,status});
+    try { saveTickets(); } catch (se) { console.error('saveTickets error', se); }
+    renderManagerTickets();
+    renderTechTickets();
+    setText('#tk_msg',`Ticket ${id} created for ${machine} & assigned to ${assignee}.`);
+    $('#tk_msg').style.color='var(--muted)';
+    resetTicketForm();
+    updateNotifications();
+    // Scroll to table to confirm creation
+    var mts = document.getElementById('managerTicketsSection'); if (mts) mts.scrollIntoView({behavior:'smooth'});
+  } catch (e) {
+    console.error('Ticket create error', e);
+    setText('#tk_msg',`Failed to create ticket: ${e && e.message ? e.message : 'Unknown error'}`);
+    $('#tk_msg').style.color='#ff8a8a';
+  }
+}
+
+function renderManagerTickets(){
+  const tbody = document.querySelector('#managerTicketsTable tbody');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+  (Array.isArray(tickets)?tickets:[]).forEach(t=>{
+    const tr = document.createElement('tr');
+    const machineDisplay = t.machine || 'N/A';
+    tr.innerHTML = `
+      <td>${t.id}</td>
+      <td>${t.created}</td>
+      <td><span class="badge" style="background:rgba(139,92,246,0.3);color:var(--text);font-size:0.75rem">${machineDisplay}</span></td>
+      <td style="text-align:left">${t.title}</td>
+      <td>${t.priority}</td>
+      <td>${t.assignee}</td>
+      <td>${t.due}</td>
+      <td>${statusBadge(mapTicketStatusToBadge(t.status))}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+/* Filters & Health Summary & Insights */
+function applySeverityFilter() {
+  const val = $('#severityFilter').value;
+  const rows = $$('#managerTable tbody tr');
+  rows.forEach(r => {
+    const sev = r.getAttribute('data-sev') || 'ok';
+    const mach = r.getAttribute('data-machine') || '';
+    const sevOk = (val === 'all' || val === sev);
+    const machOk = (selectedMachine === 'all' || selectedMachine === mach);
+    r.style.display = (sevOk && machOk) ? '' : 'none';
+  });
+}
+$('#severityFilter').addEventListener('change', applySeverityFilter);
+
+/* Machine selector (main dropdown) */
+if (document.getElementById('machineSelector')) {
+  document.getElementById('machineSelector').addEventListener('change', (e)=>{
+    selectedMachine = e.target.value || 'all';
+    updateMachineLabel();
+    applySeverityFilter();
+    rebuildForMachine();
+  });
+}
+
+function updateHealthSummary() {
+  let active = 0, pending = 0, resolvedToday = 0;
+  const today = new Date().toISOString().slice(0,10);
+  recordsById.forEach((rec, id) => {
+    const sev = rec.analysis?.sev || 'ok';
+    const eff = getEffectiveStatus(id);
+    if ((sev === 'warn' || sev === 'crit') && eff !== 'resolved') active++;
+    if (eff === 'unsolved') pending++;
+    if (eff === 'resolved' && rec.dateISO === today) resolvedToday++;
+  });
+  setText('#hs_active', active);
+  setText('#hs_pending', pending);
+  setText('#hs_resolved', resolvedToday);
+}
+
+function avg(arr){return arr.length?arr.reduce((a,b)=>a+b,0)/arr.length:0}
+function updateInsights() {
+  const visc = viscChart.data.datasets[0].data.slice(-40).map(v=>+v).filter(v=>!isNaN(v));
+  const moist = moistChart.data.datasets[0].data.slice(-40).map(v=>+v).filter(v=>!isNaN(v));
+  const air = airChart.data.datasets[0].data.slice(-40).map(v=>+v).filter(v=>!isNaN(v));
+  const msgs = [];
+
+  if (visc.length>=10){
+    const range = +(Math.max(...visc)-Math.min(...visc)).toFixed(2);
+    if (range>1.0) msgs.push(`Viscosity fluctuation range is high (${range}), consider stabilizing thinner feed.`);
+    const first=avg(visc.slice(0,visc.length/2|0)), last=avg(visc.slice(visc.length/2|0));
+    if (last-first>=0.2) msgs.push('Viscosity trending upward — verify mixer torque and chemical ratio.');
+    if (first-last>=0.2) msgs.push('Viscosity trending downward — check for leaks/over-thinning.');
+    if (visc.filter(v=>v>3.6).length>=2) msgs.push('Multiple points above 3.6 — risk of poor print edges.');
+  }
+  if (moist.length){
+    const highPct = Math.round(100*moist.filter(v=>v>800).length/(moist.length));
+    if (highPct>=25) msgs.push(`Consistent moisture peaks (${highPct}% > 800) — inspect dryer/PTC heater.`);
+    else msgs.push('Moisture is largely stable with rare spikes.');
+  }
+  if (air.length){
+    const zeros = air.filter(v=>v===0).length;
+    if (zeros>=2) msgs.push('Bubble blockage events detected — run bubble-crash and clean optics.');
+    else msgs.push('Bubble formation normalized; no recent blocks.');
+  }
+  if (!msgs.length) msgs.push('Stable plant performance — no critical insights in the last window.');
+
+  window.__insights = msgs;
+}
+function renderInsights(){
+  const wrap = $('#insightContainer'); wrap.innerHTML = '';
+  (window.__insights||[]).forEach((m,i)=>{
+    const row = document.createElement('div');
+    row.className='insight-item';
+    row.innerHTML = `<div class="txt">• ${m}</div><button class="btn ghost sm" onclick="markInsight(${i})">Mark reviewed</button>`;
+    wrap.appendChild(row);
+  });
+  if (!wrap.children.length){
+    wrap.innerHTML = `<div class="small" style="color:var(--muted)">No insights to show.</div>`;
+  }
+}
+function markInsight(i){
+  if (!window.__insights) return;
+  window.__insights.splice(i,1);
+  renderInsights();
+}
+
+/* ===== Notifications (Bell / Drawer) ===== */
+function toggleNotifs(){
+  const p = $('#notifDrawer');
+  const open = p.classList.toggle('open');
+  p.setAttribute('aria-hidden', open?'false':'true');
+}
+document.addEventListener('click',e=>{
+  const p=$('#notifDrawer'); const b=$('#bellBtn');
+  if (!p) return;
+  if (p.classList.contains('open') && !p.contains(e.target) && !b.contains(e.target)) {
+    p.classList.remove('open'); p.setAttribute('aria-hidden','true');
+  }
+});
+
+function updateNotifications(){
+  // Unresolved warn+crit alerts
+  const alerts = [];
+  recordsById.forEach((rec, id)=>{
+    const sev = rec.analysis?.sev;
+    const st = getEffectiveStatus(id);
+    if ((sev==='warn' || sev==='crit') && st!=='resolved') {
+      alerts.push({id, sev, time:rec.time, text: rec.payload.Alert || rec.analysis.reason || 'Alert'});
+    }
+  });
+  // Open tickets (not resolved)
+  const openTickets = tickets.filter(t=>t.status!=='resolved');
+
+  const total = alerts.length + openTickets.length;
+  const countEl = $('#bellCount');
+  countEl.style.display = total ? 'inline-block' : 'none';
+  countEl.innerText = total;
+
+  // Build list
+  const list = $('#notifList');
+  if (!list) return;
+  list.innerHTML = '';
+
+  alerts.slice(-8).reverse().forEach(a=>{
+    const item = document.createElement('div');
+    item.className='notif-item';
+    const ico = a.sev==='crit' ? '❗' : '⚠️';
+    const tagCls = a.sev==='crit' ? 'tag-crit' : 'tag-alert';
+    item.innerHTML = `
+      <div class="notif-ico">${ico}</div>
+      <div style="flex:1">
+        <div style="font-weight:800;display:flex;align-items:center">${a.text}<span class="notif-tag ${tagCls}">${a.sev.toUpperCase()}</span></div>
+        <div class="small" style="color:var(--muted)">${a.time}</div>
+      </div>
+      <div class="notif-actions">
+        <button class="btn ghost sm" onclick="openIssue('${a.id}');toggleNotifs()">Open</button>
+        <button class="btn sm" onclick="ackFromBell('${a.id}')">Ack</button>
+      </div>`;
+    list.appendChild(item);
+  });
+
+  openTickets.slice(0,Math.max(0,8-alerts.length)).forEach(t=>{
+    const item = document.createElement('div');
+    item.className='notif-item';
+    item.innerHTML = `
+      <div class="notif-ico">🧾</div>
+      <div style="flex:1">
+        <div style="font-weight:800;display:flex;align-items:center">${t.title}<span class="notif-tag tag-ticket">TICKET</span></div>
+        <div class="small" style="color:var(--muted)">Assigned to ${t.assignee} · Due ${t.due}</div>
+      </div>
+      <div class="notif-actions">
+        <button class="btn ghost sm" onclick="switchManagerTab('ticket');toggleNotifs()">View</button>
+      </div>`;
+    list.appendChild(item);
+  });
+
+  if (!list.children.length){
+    list.innerHTML = `<div class="small" style="color:var(--muted);padding:8px">No new notifications.</div>`;
+  }
+}
+function ackFromBell(id){
+  setStatus(id,'ack');
+  reflectStatusInTable(id);
+}
+function markAllSeen(){
+  // mark warn/crit alerts as ack (and close panel + reset UI count)
+  let changed = false;
+  recordsById.forEach((rec,id)=>{
+    if ((rec.analysis?.sev==='warn' || rec.analysis?.sev==='crit') && getEffectiveStatus(id)!=='resolved') {
+      setStatus(id,'ack'); changed = true;
+    }
+  });
+  if (changed) {
+    // reflect everywhere
+    $$('#managerTable tbody tr').forEach(tr=>{
+      const id = tr.getAttribute('data-id');
+      if (id) reflectStatusInTable(id);
+    });
+  }
+  // Reset badge to zero & hide
+  const countEl = $('#bellCount');
+  countEl.innerText = '0';
+  countEl.style.display = 'none';
+  // Close panel
+  const p = $('#notifDrawer'); p.classList.remove('open'); p.setAttribute('aria-hidden','true');
+}
+
+/* WS handling */
+let reconnect = null;
+function setWsState(s) { $('#wsState').innerText = s; }
+function updateControls() {
+  $('#pauseBtn').disabled = !(ws && ws.readyState === WebSocket.OPEN);
+  $('#connectBtn').innerText = (ws && ws.readyState === WebSocket.OPEN) ? 'Disconnect' : 'Connect';
+}
+function connectWS() {
+if (ws && (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING)) return;
+if (reconnect) { clearTimeout(reconnect); reconnect = null; }
+ws = new WebSocket(CONFIG.WS_URL);
+setWsState('connecting');
+ws.onopen = () => { setWsState('connected'); updateControls(); $('#pauseBtn').disabled = false; };
+ws.onmessage = ev => {
+if (paused) return;
+const text = ev.data?.toString();
+    try {
+      if (text.trim().startsWith('{') || text.trim().startsWith('[')) {
+        const parsed = JSON.parse(text);
+        if (Array.isArray(parsed)) parsed.forEach(handleObj); else handleObj(parsed);
+      } else {
+        text.split(/\r?\n/).filter(Boolean).forEach(line => {
+          try { handleObj(JSON.parse(line)); } catch (e) {
+            const cols = line.split(',');
+            if (cols.length >= 12) {
+              handleObj({
+                Moisture: cols[0], MoistureValue: cols[1], AirBubbleValue: cols[3] || cols[2],
+                ViscosityValue: cols[5], Valve: cols[6], Communication: cols[7], PowerSurge: cols[8],
+                Description: cols[9], Alert: cols[10], SystemResult: cols[11]
+              });
+            }
+          }
+        });
+      }
+    } catch (err) { console.error('parse error', err); }
+  };
+  ws.onerror = () => { setWsState('error'); updateControls(); };
+  ws.onclose = () => { setWsState('disconnected'); updateControls(); reconnect = setTimeout(connectWS, 3000); };
+}
+function disconnectWS() {
+  if (reconnect) { clearTimeout(reconnect); reconnect = null; }
+  if (ws) { try { ws.onclose = null; ws.close(); } catch (e) {} ws = null; }
+  setWsState('disconnected'); updateControls();
+}
+function toggleConnect() { if (ws && ws.readyState === WebSocket.OPEN) disconnectWS(); else connectWS(); }
+function togglePause() { paused = !paused; $('#pauseBtn').innerText = paused ? 'Resume' : 'Pause'; }
+
+/* Toast utility for chart clicks */
+let toastTimer = null;
+function showToast(msg){
+  const t = $('#toast'); if (!t) return;
+  t.innerText = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove('show'), 4000);
+}
+
+/* Chart click handlers -> show latest, avg(10), trend */
+function chartInfo(chart, label){
+  const series = chart.data.datasets[0].data.filter(v=>!isNaN(v));
+  const last = series.length ? series[series.length-1] : '—';
+  const tail = series.slice(-10);
+  const avg10 = tail.length ? (tail.reduce((a,b)=>a+b,0)/tail.length).toFixed(2) : '—';
+  let trend = '→';
+  if (tail.length>=2){
+    trend = tail[tail.length-1]>tail[0]?'↑':(tail[tail.length-1]<tail[0]?'↓':'→');
+  }
+  showToast(`${label} — Avg(10): ${avg10} | Trend: ${trend} | Last: ${typeof last==='number'?last.toFixed(2):last}`);
+}
+document.getElementById('viscosityChart').addEventListener('click', ()=>chartInfo(viscChart,'Viscosity'));
+document.getElementById('moistureChart').addEventListener('click', ()=>chartInfo(moistChart,'Moisture'));
+document.getElementById('airChart').addEventListener('click', ()=>chartInfo(airChart,'Air Bubble'));
+
+function rebuildForMachine() {
+  // Clear current charts
+  viscChart.data.labels = []; viscChart.data.datasets[0].data = []; viscChart.update('none');
+  moistChart.data.labels = []; moistChart.data.datasets[0].data = []; moistChart.update('none');
+  airChart.data.labels = []; airChart.data.datasets[0].data = []; airChart.update('none');
+
+  // Rebuild from stored records matching selection
+  const recs = Array.from(recordsById.values());
+  const filtered = selectedMachine==='all' ? recs : recs.filter(r => r.machine === selectedMachine);
+  filtered.forEach(r => {
+    const p = r.payload || {};
+    pushLine(viscChart, p.ViscosityValue ?? null);
+    pushLine(moistChart, p.MoistureValue ?? null);
+    pushLine(airChart, p.AirBubbleValue ?? p.OpticalValue ?? null);
+  });
+  // Update KPIs from last record
+  const last = filtered.length ? filtered[filtered.length-1].payload : null;
+  if (last) {
+    setText('#m_visc', last.ViscosityValue ?? '--'); setText('#m_moist', last.MoistureValue ?? '--');
+    setText('#m_air', last.AirBubbleValue ?? last.OpticalValue ?? '--');
+    setText('#m_status', last.SystemResult ?? '--');
+    $('#m_status').style.color = ((last.SystemResult || '').toLowerCase() === 'pass') ? 'var(--ok)' : 'var(--crit)';
+  }
+}
+
+/* payload handling */
+function handleObj(obj) {
+  if ('Air Bubble' in obj) obj.AirBubbleValue = obj['Air Bubble'];
+  if ('AirBubble' in obj && !obj.AirBubbleValue) obj.AirBubbleValue = obj.AirBubble;
+  // Resolve machine id and attach
+  const machine = obj.__machine || getMachineId(obj);
+  obj.__machine = machine;
+
+  // Update charts and KPIs only if matches current selection or 'all'
+  const matchesSel = (selectedMachine === 'all' || machine === selectedMachine);
+  if (matchesSel) {
+    setText('#m_visc', obj.ViscosityValue ?? '--'); setText('#m_moist', obj.MoistureValue ?? '--');
+    setText('#m_air', obj.AirBubbleValue ?? obj.OpticalValue ?? '--');
+    setText('#m_status', obj.SystemResult ?? '--'); setText('#o_status', obj.SystemResult ?? '--');
+    setText('#t_visc', obj.ViscosityValue ?? '--'); setText('#t_moist', obj.MoistureValue ?? '--');
+    setText('#t_air', obj.AirBubbleValue ?? obj.OpticalValue ?? '--');
+    $('#m_status').style.color = ((obj.SystemResult || '').toLowerCase() === 'pass') ? 'var(--ok)' : 'var(--crit)';
+
+    pushLine(viscChart, obj.ViscosityValue ?? null);
+    pushLine(moistChart, obj.MoistureValue ?? null);
+    pushLine(airChart, obj.AirBubbleValue ?? obj.OpticalValue ?? null);
+  }
+
+  addManagerRow(obj);
+  const a = analyze(obj);
+  // tech-side system alerts intentionally not shown
+
+  const isPass = (obj.SystemResult || '').toLowerCase() === 'pass';
+  ownerRolling.push(isPass ? 1 : 0); if (ownerRolling.length > ROLL_N) ownerRolling.shift();
+  const passPct = Math.round((ownerRolling.reduce((s, v) => s + v, 0) / ownerRolling.length) * 100);
+  pushLine(ownerPass, passPct, 120);
+
+  const bucket = Math.floor(Date.now() / 60000);
+  perMinute.set(bucket, (perMinute.get(bucket) || 0) + 1);
+  const keys = Array.from(perMinute.keys()).sort((a, b) => a - b).slice(-20);
+  ownerTPM.data.labels = []; ownerTPM.data.datasets[0].data = [];
+  keys.forEach(k => {
+    ownerTPM.data.labels.push(new Date(k * 60000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+    ownerTPM.data.datasets[0].data.push(perMinute.get(k));
+  });
+  ownerTPM.update('none');
+
+  if (a.sev === 'ok') sevMix.ok++; else if (a.sev === 'warn') sevMix.warn++; else sevMix.crit++;
+  updateDoughnut(ownerMix, sevMix.ok, sevMix.warn, sevMix.crit);
+
+  // Update machine stats
+  const mi = MACHINES.indexOf(machine);
+  if (mi >= 0) {
+    machineStats[mi].total++;
+    if (isPass) machineStats[mi].pass++;
+    machineStats[mi].last.visc = obj.ViscosityValue ?? '--';
+    machineStats[mi].last.moist = obj.MoistureValue ?? '--';
+    machineStats[mi].last.air = obj.AirBubbleValue ?? obj.OpticalValue ?? '--';
+    machineStats[mi].last.result = obj.SystemResult ?? '--';
+  }
+  renderMachines();
+
+  const idx = metroPtr % METROS.length; metroPtr++;
+  metroStats[idx].total++; if (isPass) metroStats[idx].pass++;
+  renderHeat();
+}
+
+function renderMachines() {
+  const list = $('#machineGrid');
+  if (!list) return;
+  list.innerHTML = '';
+  MACHINES.forEach((m, i) => {
+    const ms = machineStats[i];
+    const pct = ms.total ? Math.round((ms.pass / ms.total) * 100) : 0;
+    const cls = pct >= 90 ? 'ok' : pct >= 80 ? 'warn' : 'crit';
+    const item = document.createElement('div');
+    item.className = 'heat-cell';
+    item.innerHTML = `
+      <div style="font-weight:800">${m}</div>
+      <div style="margin-top:8px"><i class="dot ${cls}"></i>${pct}% pass rate</div>
+      <div class="small" style="margin-top:6px;color:var(--muted)">${ms.pass}/${ms.total} samples</div>
+      <div class="small" style="margin-top:6px;color:var(--muted)">Last: ${ms.last.visc} / ${ms.last.moist} / ${ms.last.air} / ${ms.last.result}</div>
+    `;
+    list.appendChild(item);
+  });
+}
+
+/* Manager utilities */
+function clearManagerData() {
+  viscChart.data.labels = []; viscChart.data.datasets[0].data = []; viscChart.update();
+  moistChart.data.labels = []; moistChart.data.datasets[0].data = []; moistChart.update();
+  airChart.data.labels = []; airChart.data.datasets[0].data = []; airChart.update();
+  $('#managerTable tbody').innerHTML = '';
+  rowCounter = totalCount = passCount = failCount = 0;
+  setText('#o_total', totalCount); setText('#o_pass', passCount); setText('#o_fail', failCount);
+  setText('#recentSummary', 'Waiting for data…');
+  updateHealthSummary();
+}
+
+/* clamp date pickers & due date min */
+(function clampDatePicker() {
+  const inp = $('#reportDatePicker');
+  const inp2 = $('#reportDatePicker2');
+  const todayStr = new Date().toISOString().split('T')[0];
+  
+  // Set today's date as default and max for both date pickers
+  if (inp) { 
+    inp.value = todayStr;
+    inp.max = todayStr; 
+    inp.addEventListener('change', () => { if (inp.value && inp.value > todayStr) inp.value = todayStr; }); 
+  }
+  if (inp2) { 
+    inp2.value = todayStr;
+    inp2.max = todayStr; 
+    inp2.addEventListener('change', () => { if (inp2.value && inp2.value > todayStr) inp2.value = todayStr; }); 
+  }
+  
+  const due = $('#tk_due'); if (due) due.min = todayStr;
+})();
+
+/* Load date */
+function loadDateCommon(sel){
+  if (!sel) { alert('Please select a date'); return; }
+  currentReportDateStr = sel;
+  clearManagerData();
+  // Generate more sample data for better insights (15 records with varying patterns)
+  const samplePast = [
+    { ViscosityValue: '2.50', MoistureValue: '650', AirBubbleValue: '1', Valve: 'ON', Communication: 'Success', PowerSurge: 'Normal', Description: 'Routine sample', Alert: 'None', SystemResult: 'Pass' },
+    { ViscosityValue: '2.65', MoistureValue: '680', AirBubbleValue: '1', Valve: 'ON', Communication: 'Success', PowerSurge: 'Normal', Description: 'Normal operation', Alert: 'None', SystemResult: 'Pass' },
+    { ViscosityValue: '2.80', MoistureValue: '720', AirBubbleValue: '1', Valve: 'ON', Communication: 'Success', PowerSurge: 'Normal', Description: 'Slight viscosity increase', Alert: 'None', SystemResult: 'Pass' },
+    { ViscosityValue: '2.95', MoistureValue: '750', AirBubbleValue: '1', Valve: 'ON', Communication: 'Success', PowerSurge: 'Normal', Description: 'Normal operation', Alert: 'None', SystemResult: 'Pass' },
+    { ViscosityValue: '3.10', MoistureValue: '780', AirBubbleValue: '1', Valve: 'ON', Communication: 'Success', PowerSurge: 'Normal', Description: 'Viscosity trending up', Alert: 'None', SystemResult: 'Pass' },
+    { ViscosityValue: '3.25', MoistureValue: '820', AirBubbleValue: '1', Valve: 'ON', Communication: 'Success', PowerSurge: 'Normal', Description: 'Viscosity high', Alert: 'Monitor closely', SystemResult: 'Pass' },
+    { ViscosityValue: '3.40', MoistureValue: '850', AirBubbleValue: '1', Valve: 'ON', Communication: 'Success', PowerSurge: 'Normal', Description: 'Viscosity near limit', Alert: 'Check mixer', SystemResult: 'Pass' },
+    { ViscosityValue: '3.55', MoistureValue: '880', AirBubbleValue: '1', Valve: 'ON', Communication: 'Success', PowerSurge: 'Normal', Description: 'Viscosity above range', Alert: 'Reduce thinner', SystemResult: 'Fail' },
+    { ViscosityValue: '3.70', MoistureValue: '900', AirBubbleValue: '0', Valve: 'OFF', Communication: 'Success', PowerSurge: 'Normal', Description: 'Moisture high, bubble blocked', Alert: 'Check dryer & optics', SystemResult: 'Fail' },
+    { ViscosityValue: '3.50', MoistureValue: '870', AirBubbleValue: '1', Valve: 'ON', Communication: 'Success', PowerSurge: 'Normal', Description: 'Corrective action taken', Alert: 'Monitoring', SystemResult: 'Pass' },
+    { ViscosityValue: '3.30', MoistureValue: '830', AirBubbleValue: '1', Valve: 'ON', Communication: 'Success', PowerSurge: 'Normal', Description: 'Improvement noted', Alert: 'None', SystemResult: 'Pass' },
+    { ViscosityValue: '3.10', MoistureValue: '790', AirBubbleValue: '1', Valve: 'ON', Communication: 'Success', PowerSurge: 'Normal', Description: 'Stabilizing', Alert: 'None', SystemResult: 'Pass' },
+    { ViscosityValue: '2.90', MoistureValue: '740', AirBubbleValue: '1', Valve: 'ON', Communication: 'Success', PowerSurge: 'Normal', Description: 'Normal levels restored', Alert: 'None', SystemResult: 'Pass' },
+    { ViscosityValue: '2.75', MoistureValue: '700', AirBubbleValue: '1', Valve: 'ON', Communication: 'Success', PowerSurge: 'Normal', Description: 'Optimal range', Alert: 'None', SystemResult: 'Pass' },
+    { ViscosityValue: '2.60', MoistureValue: '670', AirBubbleValue: '1', Valve: 'ON', Communication: 'Success', PowerSurge: 'Normal', Description: 'Routine sample', Alert: 'None', SystemResult: 'Pass' }
+  ];
+  samplePast.forEach(obj => { obj.__machine = getMachineId(obj); addManagerRow(obj); });
+  rebuildForMachine();
+  // Update insights after loading data
+  updateInsights();
+  renderInsights();
+}
+$('#btnLoadDate').addEventListener('click', () => loadDateCommon($('#reportDatePicker').value));
+$('#btnLoadDate2').addEventListener('click', () => loadDateCommon($('#reportDatePicker2').value));
+
+/* PDF export (Live) */
+function exportSectionPDF(){
+  const section = document.getElementById('managerRecordsSection');
+  const prevMaxH = section.style.maxHeight, prevOverflow = section.style.overflow;
+  section.style.maxHeight = 'none'; section.style.overflow = 'visible';
+  const origBodyBg = document.body.style.background; document.body.style.background = '#ffffff';
+  const painted = [];
+  [['td,th', '.kpi', '.mini', '.small']].flat().forEach(sel => {
+    section.querySelectorAll(sel).forEach(el => { painted.push(el); el.dataset._prevColor = el.style.color; el.style.color = '#000'; });
+  });
+  const prevSectionBg = section.style.background; section.style.background = '#ffffff';
+
+  html2canvas(section, { scale: 2, useCORS: true, scrollY: -window.scrollY }).then(canvas => {
+    const { jsPDF } = window.jspdf; const pdf = new jsPDF('p', 'pt', 'a4');
+    const pdfW = pdf.internal.pageSize.getWidth(), pdfH = pdf.internal.pageSize.getHeight();
+    const imgW = canvas.width, imgH = canvas.height; const ratio = imgW / imgH; const imgH_onPdf = pdfW / ratio;
+
+    const selected = currentReportDateStr || $('#reportDatePicker').value || $('#reportDatePicker2').value;
+    const dateText = `Manager Report — ${formatDateLong(selected)}`;
+    pdf.setFont('helvetica', 'bold'); pdf.setFontSize(14); pdf.text(dateText, 40, 36);
+
+    let topOffset = 60, heightLeft = imgH_onPdf, position = topOffset;
+    const imgData = canvas.toDataURL('image/png');
+    pdf.addImage(imgData, 'PNG', 0, position, pdfW, imgH_onPdf);
+    heightLeft -= (pdfH - topOffset);
+
+    while (heightLeft > 0) {
+      position -= pdfH; pdf.addPage();
+      pdf.setFont('helvetica', 'bold'); pdf.setFontSize(14); pdf.text(dateText, 40, 36);
+      const pageTop = 60; pdf.addImage(imgData, 'PNG', 0, position + pageTop, pdfW, imgH_onPdf);
+      heightLeft -= (pdfH - pageTop);
+    }
+    const safeName = dateText.replace(/\s+/g, '_').replace(/[^\w\-]+/g, '');
+    pdf.save(`${safeName}.pdf`);
+  }).catch(err => { console.error('PDF error', err); alert('Failed to export PDF.'); })
+    .finally(() => {
+      document.body.style.background = origBodyBg; section.style.background = prevSectionBg;
+      painted.forEach(el => { el.style.color = el.dataset._prevColor || ''; delete el.dataset._prevColor; });
+      section.style.maxHeight = prevMaxH; section.style.overflow = prevOverflow || 'auto';
+    });
+}
+document.getElementById('btnExportPDF').addEventListener('click', exportSectionPDF);
+
+/* ISSUE DETAILS */
+let currentIssueId = null;
+function openIssue(id) {
+  currentIssueId = id;
+  const rec = recordsById.get(id); if (!rec) return;
+  const { payload, analysis } = rec;
+
+  $('#issueIdLabel').innerText = `Record ID: ${id}`;
+  setText('#issueReason', payload.Description || analysis.reason || '—');
+  setText('#issueFix', analysis.fix || payload.Alert || '—');
+  $('#issueSeverity').innerHTML = sevBadge(analysis.sev);
+
+  const st = getEffectiveStatus(id);
+  $('#issueStatusBadge').outerHTML = `<span id="issueStatusBadge" class="badge status ${st === 'resolved' ? 'resolved' : (st === 'ack' ? 'ack' : st === 'inprogress' ? 'inprogress' : 'unsolved')}">${st === 'resolved' ? 'Resolved' : st === 'ack' ? 'Acknowledged' : st === 'inprogress' ? 'In Progress' : 'Unresolved'}</span>`;
+  $('#issueStatusSelect').value = st;
+
+  $('#managerView').style.display = 'none';
+  $('#technicianView').style.display = 'none';
+  $('#ownerView').style.display = 'none';
+  $('#issueView').style.display = 'block';
+}
+function backToManager() { $('#issueView').style.display = 'none'; selectView('manager'); }
+function setIssueStatus(newStatus) {
+  if (!currentIssueId) return;
+  setStatus(currentIssueId, newStatus);
+  reflectStatusInTable(currentIssueId);
+  const label = newStatus === 'resolved' ? 'Resolved' : newStatus === 'ack' ? 'Acknowledged' : newStatus === 'inprogress' ? 'In Progress' : 'Unresolved';
+  const cls = newStatus === 'resolved' ? 'resolved' : newStatus === 'ack' ? 'ack' : newStatus === 'inprogress' ? 'inprogress' : 'unsolved';
+  $('#issueStatusBadge').className = `badge status ${cls}`;
+  $('#issueStatusBadge').innerText = label;
+  $('#issueStatusSelect').value = newStatus;
+  updateHealthSummary();
+  updateNotifications();
+}
+$('#issueStatusSelect').addEventListener('change', e => { if (!currentIssueId) return; setIssueStatus(e.target.value); });
+
+/* Owner view helpers */
+function initHeat() { renderHeat(); }
+function renderHeat() {
+  const g = $('#heatGrid'); g.innerHTML = '';
+  METROS.forEach((c, i) => {
+    const { total, pass } = metroStats[i];
+    const pct = total ? Math.round((pass / total) * 100) : 0;
+    const cls = pct >= 90 ? 'ok' : pct >= 80 ? 'warn' : 'crit';
+    const cell = document.createElement('div'); cell.className = 'heat-cell';
+    cell.innerHTML = `<div style="font-weight:800">${c}</div>
+      <div style="margin-top:8px"><i class="dot ${cls}"></i>${pct}% pass rate</div>
+      <div class="small" style="margin-top:6px;color:var(--muted)">${pass}/${total} samples</div>`;
+    g.appendChild(cell);
+  });
+}
+
+/* Sample filler */
+const SAMPLE = [
+  { "Moisture":1,"MoistureValue":824,"AirBubbleValue":0,"ViscosityValue":2.94,"Valve":"ON","Communication":"Success","PowerSurge":"Normal","Description":"All Systems Operating Normally","Alert":"Normal","SystemResult":"Pass" },
+  { "Moisture":0,"MoistureValue":0,"AirBubbleValue":1,"ViscosityValue":2.43,"Valve":"ON","Communication":"Success","PowerSurge":"Normal","Description":"Partial Sensor Failure","Alert":"Check Sensor Connections","SystemResult":"Fail" },
+  { "Moisture":1,"MoistureValue":813,"AirBubbleValue":0,"ViscosityValue":3.29,"Valve":"OFF","Communication":"Success","PowerSurge":"Normal","Description":"Actuator Jam","Alert":"Flow Path Blocked","SystemResult":"Fail" }
+];
+function fillSample() { SAMPLE.forEach((s, i) => setTimeout(() => handleObj(s), i * 200)); }
+
+/* init */
+(function () { renderManagerTickets(); renderTechniciansTab(); updateMachineLabel(); })();
+</script>
+</body>
+</html>
