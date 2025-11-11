@@ -1,0 +1,5 @@
+websockets
+asyncio
+flask
+gunicorn
+python-dotenv
