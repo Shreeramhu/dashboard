@@ -3,3 +3,5 @@ asyncio
 flask
 gunicorn
 python-dotenv
+paho-mqtt
+
