@@ -9,7 +9,7 @@ MODE = os.getenv("MODE", "test")
 
 @app.get("/")
 async def root():
-    return JSONResponse({"status": "ok", "mode": MODE})
+    return JSONResponse({"status": "✅ FastAPI WebSocket server running", "mode": MODE})
 
 @app.head("/")
 async def head_root():
@@ -38,8 +38,5 @@ async def ws(ws: WebSocket):
         await ws.close()
 
 if __name__ == "__main__":
-    print(f"[SERVER] 🚀 Running on 0.0.0.0:{PORT}")
-    # The 'loop.run_forever()' ensures the process never exits
+    print(f"[SERVER] 🚀 Running FastAPI WebSocket server on 0.0.0.0:{PORT}")
     uvicorn.run(app, host="0.0.0.0", port=PORT)
-    while True:
-        asyncio.sleep(3600)
